@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual Environment
+venv/
+.env
+
+# VS Code
+.vscode/
+
+# Docker
+*.log
+
+# Django
+db.sqlite3
+media/
+
+# Python Cache
+.pytest_cache/
+
+# IDE
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
