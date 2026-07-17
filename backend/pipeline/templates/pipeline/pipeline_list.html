@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Pipeline List</h2>
+
+<ul>
+
+{% for pipeline in pipelines %}
+
+<li>
+
+<b>Name:</b> {{ pipeline.name }}
+
+<br>
+
+<b>Branch:</b> {{ pipeline.branch }}
+
+<br>
+
+<b>Repository:</b> {{ pipeline.repository_url }}
+
+</li>
+
+<br>
+<a href="/pipelines/{{ pipeline.id }}/edit/">
+
+Edit
+
+</a>
+
+|
+
+<a href="/pipelines/{{ pipeline.id }}/delete/">
+
+Delete
+
+</a>
+{% endfor %}
+
+</ul>
+
+{% endblock %}
+

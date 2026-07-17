@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Edit Pipeline</h2>
+
+<form method="POST">
+
+{% csrf_token %}
+
+<label>Name</label><br>
+<input
+type="text"
+name="name"
+value="{{ pipeline.name }}"
+><br><br>
+
+<label>Repository URL</label><br>
+<input
+type="url"
+name="repository_url"
+value="{{ pipeline.repository_url }}"
+><br><br>
+
+<label>Branch</label><br>
+<input
+type="text"
+name="branch"
+value="{{ pipeline.branch }}"
+><br><br>
+
+<label>Jenkins Job Name</label><br>
+<input
+type="text"
+name="jenkins_job_name"
+value="{{ pipeline.jenkins_job_name }}"
+><br><br>
+
+<label>Description</label><br>
+
+<textarea
+name="description"
+>{{ pipeline.description }}</textarea>
+
+<br><br>
+
+<button type="submit">
+
+Update Pipeline
+
+</button>
+
+</form>
+
+{% endblock %}
