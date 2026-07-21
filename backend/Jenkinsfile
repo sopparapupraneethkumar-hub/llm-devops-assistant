@@ -2,9 +2,12 @@ pipeline {
     agent any
 
     stages {
-        stage('Verify Jenkinsfile') {
+        stage('Verify Django Project') {
             steps {
-                echo 'Pipeline loaded successfully from GitHub!'
+                sh '''
+                    cd backend
+                    python3 manage.py check
+                '''
             }
         }
     }
