@@ -2,6 +2,15 @@ pipeline {
     agent any
 
     stages {
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    python3 -m pip install --upgrade pip
+                    python3 -m pip install -r requirements.txt
+                '''
+            }
+        }
+
         stage('Verify Django Project') {
             steps {
                 sh '''
