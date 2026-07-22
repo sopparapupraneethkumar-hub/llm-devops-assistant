@@ -21,6 +21,7 @@ class Build(models.Model):
     duration = models.IntegerField(
         help_text="Build duration in seconds"
     )
+    console_log = models.TextField(blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
