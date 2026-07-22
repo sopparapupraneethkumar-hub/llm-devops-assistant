@@ -2,12 +2,15 @@ pipeline {
     agent any
 
     stages {
+
         stage('Setup Python Environment') {
             steps {
                 sh '''
                     python3 -m venv .venv
                     . .venv/bin/activate
-                    pip install --upgrade pip
+                    python -m pip install --upgrade pip
+
+                    cd backend
                     pip install -r requirements.txt
                 '''
             }
@@ -17,10 +20,31 @@ pipeline {
             steps {
                 sh '''
                     . .venv/bin/activate
+
                     cd backend
                     python manage.py check
                 '''
             }
+        }
+
+    }
+
+    post {
+        always {
+            sh """
+                . .venv/bin/activate
+
+                export API_URL=http://host.docker.internal:8000/api/builds/
+                export BUILD_NUMBER=${env.BUILD_NUMBER}
+                export JOB_NAME='${env.JOB_NAME}'
+                export BRANCH_NAME=${env.BRANCH_NAME ?: "main"}
+                export BUILD_STATUS=${currentBuild.currentResult}
+                export BUILD_DURATION=$(( ${currentBuild.duration} / 1000 ))
+
+                cd backend
+
+                python scripts/send_build.py
+            """
         }
     }
 }
