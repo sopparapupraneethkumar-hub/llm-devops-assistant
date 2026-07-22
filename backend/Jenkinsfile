@@ -41,7 +41,7 @@ pipeline {
                     "BRANCH_NAME=${env.BRANCH_NAME ?: 'main'}",
                     "BUILD_STATUS=${currentBuild.currentResult}",
                     "BUILD_DURATION=${durationSeconds}"
-                ]   ) {
+                ]) {
                     sh '''
                         . .venv/bin/activate
                         cd backend
@@ -51,3 +51,4 @@ pipeline {
             }
         }
     }
+}
