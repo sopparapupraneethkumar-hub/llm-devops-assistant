@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
+from ai_engine.services import generate_build_summary
 from .serializers import BuildSerializer
 
 
@@ -11,7 +11,10 @@ class BuildCreateView(APIView):
         serializer = BuildSerializer(data=request.data)
 
         if serializer.is_valid():
-            serializer.save()
+            build = serializer.save()
+            ai_summary = generate_build_summary(build.console_log)
+            build.ai_summary = ai_summary
+            build.save()
 
             return Response(
                 {
