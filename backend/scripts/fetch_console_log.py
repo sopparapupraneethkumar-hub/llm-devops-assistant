@@ -5,7 +5,7 @@ JOB_NAME = "python-demo-pipeline"
 BUILD_NUMBER = 14
 
 USERNAME = "praneeth"
-API_TOKEN = "11d9522750c755c27001dc6f1518fa2384"
+API_TOKEN = "11f9a4d2a1b23108d979829a3a26496f08"
 
 url = f"{JENKINS_URL}/job/{JOB_NAME}/{BUILD_NUMBER}/consoleText"
 
