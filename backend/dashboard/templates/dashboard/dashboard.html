@@ -2,8 +2,157 @@
 
 {% block content %}
 
-<h1>Dashboard</h1>
+<div class="row mb-4">
 
-<p>Welcome to the LLM DevOps Assistant Dashboard.</p>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Total Builds</h5>
+                <h2>{{ total_builds }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Successful</h5>
+                <h2 class="text-success">{{ successful_builds }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Failed</h5>
+                <h2 class="text-danger">{{ failed_builds }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Success Rate</h5>
+                <h2>{{ success_rate }}%</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="row">
+
+    <div class="col-md-6">
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header">
+                <h4 class="mb-0">🚀 Latest Build</h4>
+            </div>
+
+            <div class="card-body">
+
+                <p><strong>Build Number:</strong> {{ latest_build.build_number }}</p>
+
+                <p><strong>Project:</strong> {{ latest_build.project_name }}</p>
+
+                <p>
+                    <strong>Status:</strong>
+
+                    {% if latest_build.status == "SUCCESS" %}
+                        <span class="badge bg-success">SUCCESS</span>
+                    {% else %}
+                        <span class="badge bg-danger">FAILED</span>
+                    {% endif %}
+                </p>
+
+                <p><strong>Branch:</strong> {{ latest_build.branch }}</p>
+
+                <p><strong>Duration:</strong> {{ latest_build.duration }} seconds</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header">
+                <h4 class="mb-0">🤖 AI Analysis</h4>
+            </div>
+
+            <div class="card-body">
+
+                <pre class="mb-0">{{ latest_build.ai_summary }}</pre>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="card shadow-sm">
+
+    <div class="card-header">
+        <h4 class="mb-0">📜 Recent Builds</h4>
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-hover">
+
+            <thead>
+
+                <tr>
+                    <th>Build</th>
+                    <th>Project</th>
+                    <th>Status</th>
+                    <th>Duration</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for build in recent_builds %}
+
+                <tr>
+
+                    <td>#{{ build.build_number }}</td>
+
+                    <td>{{ build.project_name }}</td>
+
+                    <td>
+
+                        {% if build.status == "SUCCESS" %}
+                            <span class="badge bg-success">SUCCESS</span>
+                        {% else %}
+                            <span class="badge bg-danger">FAILED</span>
+                        {% endif %}
+
+                    </td>
+
+                    <td>{{ build.duration }} sec</td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
 
 {% endblock %}

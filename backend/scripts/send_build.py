@@ -1,11 +1,15 @@
 import os
 import requests
 
-API_URL = "http://127.0.0.1:8000/api/builds/"
-
+API_URL = os.getenv(
+    "API_URL",
+    "http://127.0.0.1:8000/api/builds/"
+)
 JENKINS_URL = "http://localhost:8080"
 JENKINS_USERNAME = "praneeth"
 JENKINS_API_TOKEN = "11f9a4d2a1b23108d979829a3a26496f08"
+
+DJANGO_API_TOKEN = "6147012ef490c338eadb11977757e89285e3d359"
 
 
 def fetch_console_log():
@@ -16,7 +20,6 @@ def fetch_console_log():
 
     print("\n========== DEBUG ==========")
     print("Username :", JENKINS_USERNAME)
-    print("Token    :", JENKINS_API_TOKEN)
     print("Job Name :", job_name)
     print("Build No :", build_number)
     print("URL      :", url)
@@ -42,9 +45,9 @@ def fetch_console_log():
         print("Error:", e)
         return ""
 
-
 def create_build_payload():
     payload = {
+        "jenkins_job_name": "python-demo-pipeline",
         "build_number": 15,
         "project_name": "python-demo-pipeline",
         "branch": "main",
@@ -57,10 +60,16 @@ def create_build_payload():
 
 
 def send_build_data(payload):
+    headers = {
+        "Authorization": f"Token {DJANGO_API_TOKEN}",
+        "Content-Type": "application/json"
+    }
+
     try:
         response = requests.post(
             API_URL,
-            json=payload
+            json=payload,
+            headers=headers
         )
         return response
 

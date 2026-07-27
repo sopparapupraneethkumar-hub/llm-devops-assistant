@@ -1,25 +1,59 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 from ai_engine.services import generate_build_summary
 from .serializers import BuildSerializer
+from pipeline.models import Pipeline
 
 
 class BuildCreateView(APIView):
 
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
-        serializer = BuildSerializer(data=request.data)
+
+        data = request.data.copy()
+
+        job_name = data.pop("jenkins_job_name", None)
+
+        serializer = BuildSerializer(data=data)
 
         if serializer.is_valid():
-            build = serializer.save()
+
+            try:
+                pipeline = Pipeline.objects.get(
+                    owner=request.user,
+                    jenkins_job_name=job_name
+                )
+
+            except Pipeline.DoesNotExist:
+
+                return Response(
+                    {
+                        "error": "Pipeline not found."
+                    },
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            build = serializer.save(
+                owner=request.user,
+                pipeline=pipeline
+            )
+
             ai_summary = generate_build_summary(build.console_log)
+
             build.ai_summary = ai_summary
+
             build.save()
 
             return Response(
                 {
                     "message": "Build created successfully",
-                    "data": serializer.data,
+                    "data": BuildSerializer(build).data,
                 },
                 status=status.HTTP_201_CREATED,
             )
