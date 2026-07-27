@@ -1,14 +1,22 @@
 from django import forms
 from .models import Pipeline
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from projects.models import Project
 
 
 class PipelineForm(forms.ModelForm):
 
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if user:
+            self.fields["project"].queryset = Project.objects.filter(
+                owner=user
+            )
+
     class Meta:
         model = Pipeline
         fields = [
+            "project",
             "name",
             "repository_url",
             "branch",
@@ -33,7 +41,7 @@ class PipelineForm(forms.ModelForm):
 
         allowed = [
             "main",
-            "develop"
+            "develop",
         ]
 
         if branch.startswith("feature/"):

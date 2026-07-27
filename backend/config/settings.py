@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'builds',
     'pipeline',
     'ai_engine',
+    "projects",
 ]
 
 REST_FRAMEWORK = {

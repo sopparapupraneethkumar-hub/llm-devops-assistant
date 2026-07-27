@@ -42,7 +42,6 @@
 
 </div>
 
-
 <div class="row">
 
     <div class="col-md-6">
@@ -55,23 +54,31 @@
 
             <div class="card-body">
 
-                <p><strong>Build Number:</strong> {{ latest_build.build_number }}</p>
+                {% if latest_build %}
 
-                <p><strong>Project:</strong> {{ latest_build.project_name }}</p>
+                    <p><strong>Build Number:</strong> {{ latest_build.build_number }}</p>
 
-                <p>
-                    <strong>Status:</strong>
+                    <p><strong>Project:</strong> {{ latest_build.project_name }}</p>
 
-                    {% if latest_build.status == "SUCCESS" %}
-                        <span class="badge bg-success">SUCCESS</span>
-                    {% else %}
-                        <span class="badge bg-danger">FAILED</span>
-                    {% endif %}
-                </p>
+                    <p>
+                        <strong>Status:</strong>
 
-                <p><strong>Branch:</strong> {{ latest_build.branch }}</p>
+                        {% if latest_build.status == "SUCCESS" %}
+                            <span class="badge bg-success">SUCCESS</span>
+                        {% else %}
+                            <span class="badge bg-danger">FAILED</span>
+                        {% endif %}
+                    </p>
 
-                <p><strong>Duration:</strong> {{ latest_build.duration }} seconds</p>
+                    <p><strong>Branch:</strong> {{ latest_build.branch }}</p>
+
+                    <p><strong>Duration:</strong> {{ latest_build.duration }} seconds</p>
+
+                {% else %}
+
+                    <p>No builds available.</p>
+
+                {% endif %}
 
             </div>
 
@@ -89,7 +96,15 @@
 
             <div class="card-body">
 
-                <pre class="mb-0">{{ latest_build.ai_summary }}</pre>
+                {% if latest_build %}
+
+                    <pre class="mb-0">{{ latest_build.ai_summary }}</pre>
+
+                {% else %}
+
+                    <p>No AI analysis available.</p>
+
+                {% endif %}
 
             </div>
 
@@ -99,6 +114,64 @@
 
 </div>
 
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header">
+        <h4 class="mb-0">📁 My Projects</h4>
+    </div>
+
+    <div class="card-body">
+
+        {% if projects %}
+
+            {% for project in projects %}
+
+                <div class="card mb-3">
+
+                    <div class="card-body">
+
+                        <h5>{{ project.name }}</h5>
+
+                        <p>{{ project.description }}</p>
+
+                        <strong>Pipelines</strong>
+
+                        <ul>
+
+                            {% for pipeline in project.pipelines.all %}
+
+                                <li>
+                                    {{ pipeline.name }}
+
+                                    <span class="badge bg-secondary">
+                                        {{ pipeline.branch }}
+                                    </span>
+
+                                </li>
+
+                            {% empty %}
+
+                                <li>No pipelines created.</li>
+
+                            {% endfor %}
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>No projects available.</p>
+
+        {% endif %}
+
+    </div>
+
+</div>
 
 <div class="card shadow-sm">
 
@@ -125,25 +198,41 @@
 
                 {% for build in recent_builds %}
 
-                <tr>
+                    <tr>
 
-                    <td>#{{ build.build_number }}</td>
+                        <td>#{{ build.build_number }}</td>
 
-                    <td>{{ build.project_name }}</td>
+                        <td>{{ build.project_name }}</td>
 
-                    <td>
+                        <td>
 
-                        {% if build.status == "SUCCESS" %}
-                            <span class="badge bg-success">SUCCESS</span>
-                        {% else %}
-                            <span class="badge bg-danger">FAILED</span>
-                        {% endif %}
+                            {% if build.status == "SUCCESS" %}
+                                <span class="badge bg-success">
+                                    SUCCESS
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger">
+                                    FAILED
+                                </span>
+                            {% endif %}
 
-                    </td>
+                        </td>
 
-                    <td>{{ build.duration }} sec</td>
+                        <td>{{ build.duration }} sec</td>
 
-                </tr>
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="4">
+
+                            No builds found.
+
+                        </td>
+
+                    </tr>
 
                 {% endfor %}
 

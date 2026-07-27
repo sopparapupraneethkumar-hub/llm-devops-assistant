@@ -1,24 +1,27 @@
 from django.http import HttpResponse
-from .models import Pipeline
-from django.shortcuts import render,redirect
 from django.shortcuts import (
     render,
     redirect,
     get_object_or_404,
 )
-from .forms import PipelineForm
 from django.contrib.auth.decorators import login_required
+
+from .models import Pipeline
+from .forms import PipelineForm
+from django.contrib import messages
+
 
 @login_required
 def home(request):
     return HttpResponse("Welcome to the LLM DevOps Assistant")
 
 
+@login_required
 def pipeline_list(request):
 
     pipelines = Pipeline.objects.filter(
-    owner=request.user
-)
+        owner=request.user
+    )
 
     context = {
         "pipelines": pipelines
@@ -32,10 +35,22 @@ def pipeline_list(request):
 
 @login_required
 def create_pipeline(request):
-    
-    if request.method == "POST":
 
-        form = PipelineForm(request.POST)
+    projects = request.user.projects.all()
+
+    if not projects.exists():
+        messages.warning(
+            request,
+            "You need to create a project before creating a pipeline."
+        )
+        return redirect("project_create")
+
+    if request.method == "POST":
+        form = PipelineForm(
+            request.POST,
+            user=request.user
+        )
+
         if form.is_valid():
 
             pipeline = form.save(commit=False)
@@ -50,7 +65,10 @@ def create_pipeline(request):
 
     else:
 
-        form = PipelineForm()
+        form = PipelineForm(
+            user=request.user
+        )
+
     return render(
         request,
         "pipeline/create_pipeline.html",
@@ -59,42 +77,52 @@ def create_pipeline(request):
         }
     )
 
+
 @login_required
 def edit_pipeline(request, pipeline_id):
 
     pipeline = get_object_or_404(
-    Pipeline,
-    id=pipeline_id,
-    owner=request.user
-)
+        Pipeline,
+        id=pipeline_id,
+        owner=request.user,
+    )
+
     if request.method == "POST":
 
-        pipeline.name = request.POST["name"]
-        pipeline.repository_url = request.POST["repository_url"]
-        pipeline.branch = request.POST["branch"]
-        pipeline.jenkins_job_name = request.POST["jenkins_job_name"]
-        pipeline.description = request.POST["description"]
+        form = PipelineForm(
+            request.POST,
+            instance=pipeline,
+            user=request.user,
+        )
 
-        pipeline.save()
+        if form.is_valid():
+            form.save()
+            return redirect("/pipelines/")
 
-        return redirect("/pipelines/")
+    else:
+
+        form = PipelineForm(
+            instance=pipeline,
+            user=request.user,
+        )
 
     return render(
         request,
         "pipeline/edit_pipeline.html",
         {
-            "pipeline": pipeline
+            "form": form
         }
     )
+
 
 @login_required
 def delete_pipeline(request, pipeline_id):
 
     pipeline = get_object_or_404(
-    Pipeline,
-    id=pipeline_id,
-    owner=request.user
-)
+        Pipeline,
+        id=pipeline_id,
+        owner=request.user,
+    )
 
     if request.method == "POST":
 

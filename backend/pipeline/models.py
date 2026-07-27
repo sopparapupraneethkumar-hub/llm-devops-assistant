@@ -1,12 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from projects.models import Project
 
 class Pipeline(models.Model):
     owner = models.ForeignKey(
     User,
     on_delete=models.CASCADE
     
+    )
+    project = models.ForeignKey(
+    Project,
+    on_delete=models.CASCADE,
+    related_name="pipelines"
     )
     name = models.CharField(max_length=100)
 
