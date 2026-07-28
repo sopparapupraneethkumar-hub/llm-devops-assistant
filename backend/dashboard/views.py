@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-
+from django.db.models import Avg,Count, Q
 from builds.models import Build
 from projects.models import Project
-
+from pipeline.models import Pipeline
 
 @login_required
 def dashboard(request):
@@ -18,8 +18,14 @@ def dashboard(request):
     )
 
     total_builds = user_builds.count()
-    successful_builds = user_builds.filter(status="SUCCESS").count()
-    failed_builds = user_builds.filter(status="FAILED").count()
+
+    successful_builds = user_builds.filter(
+        status="SUCCESS"
+    ).count()
+
+    failed_builds = user_builds.filter(
+        status="FAILED"
+    ).count()
 
     success_rate = 0
 
@@ -31,6 +37,31 @@ def dashboard(request):
 
     recent_builds = user_builds.order_by("-created_at")[:5]
 
+    average_duration = (
+        user_builds.aggregate(
+            Avg("duration")
+        )["duration__avg"] or 0
+    )
+
+    average_duration = round(average_duration, 2)
+    pipeline_stats = (
+        Project.objects.filter(owner=request.user)
+        .prefetch_related("pipelines")
+    )
+
+    pipeline_stats = (
+        Pipeline.objects.filter(owner=request.user)
+        .select_related("project")
+        .annotate(
+            total_builds=Count("builds"),
+            failed_builds=Count(
+                "builds",
+                filter=Q(builds__status="FAILED")
+            ),
+        )
+        .order_by("-failed_builds", "-total_builds")
+    )
+
     context = {
         "latest_build": latest_build,
         "projects": projects,
@@ -38,6 +69,7 @@ def dashboard(request):
         "successful_builds": successful_builds,
         "failed_builds": failed_builds,
         "success_rate": success_rate,
+        "average_duration": average_duration,
         "recent_builds": recent_builds,
     }
 
