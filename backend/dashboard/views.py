@@ -4,6 +4,7 @@ from django.db.models import Avg,Count, Q
 from builds.models import Build
 from projects.models import Project
 from pipeline.models import Pipeline
+from django.db.models.functions import TruncDate
 
 @login_required
 def dashboard(request):
@@ -61,17 +62,42 @@ def dashboard(request):
         )
         .order_by("-failed_builds", "-total_builds")
     )
+    build_trends = (
+        user_builds
+        .annotate(
+            day=TruncDate("created_at")
+        )
+        .values("day")
+        .annotate(
+            total_builds=Count("id")
+        )
+        .order_by("-day")
+    )
+    trend_labels = []
+    trend_data = []
 
+    for trend in build_trends:
+        trend_labels.append(
+            trend["day"].strftime("%d %b")
+        )
+        trend_data.append(
+            trend["total_builds"]
+        )
     context = {
-        "latest_build": latest_build,
-        "projects": projects,
-        "total_builds": total_builds,
-        "successful_builds": successful_builds,
-        "failed_builds": failed_builds,
-        "success_rate": success_rate,
-        "average_duration": average_duration,
-        "recent_builds": recent_builds,
+    "latest_build": latest_build,
+    "projects": projects,
+    "total_builds": total_builds,
+    "successful_builds": successful_builds,
+    "failed_builds": failed_builds,
+    "success_rate": success_rate,
+    "average_duration": average_duration,
+    "recent_builds": recent_builds,
+    "pipeline_stats": pipeline_stats,
+    "build_trends": build_trends,
+    "trend_labels": trend_labels,
+    "trend_data": trend_data,
     }
+
 
     return render(
         request,
