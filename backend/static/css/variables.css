@@ -1,0 +1,32 @@
+:root {
+
+    /* Primary Colors */
+    --primary-color: #2563EB;
+    --primary-hover: #1D4ED8;
+
+    /* Status Colors */
+    --success-color: #16A34A;
+    --danger-color: #DC2626;
+    --warning-color: #F59E0B;
+
+    /* Background */
+    --background-color: #F8FAFC;
+    --card-background: #FFFFFF;
+
+    /* Text */
+    --text-primary: #1E293B;
+    --text-secondary: #64748B;
+
+    /* Border */
+    --border-color: #E2E8F0;
+
+    /* Shadow */
+    --card-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+
+    /* Radius */
+    --border-radius: 16px;
+
+    /* Transition */
+    --transition: all .3s ease;
+
+}

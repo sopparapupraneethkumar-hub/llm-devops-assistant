@@ -1,0 +1,21 @@
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header">
+        <h4 class="mb-0">🤖 AI Analysis</h4>
+    </div>
+
+    <div class="card-body">
+
+        {% if latest_build %}
+
+            <pre class="mb-0">{{ latest_build.ai_summary }}</pre>
+
+        {% else %}
+
+            <p>No AI analysis available.</p>
+
+        {% endif %}
+
+    </div>
+
+</div>

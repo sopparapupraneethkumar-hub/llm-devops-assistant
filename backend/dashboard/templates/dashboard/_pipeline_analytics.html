@@ -1,0 +1,76 @@
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header">
+        <h4 class="mb-0">📊 Pipeline Analytics</h4>
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-hover">
+
+            <thead>
+
+                <tr>
+                    <th>Pipeline</th>
+                    <th>Project</th>
+                    <th>Total Builds</th>
+                    <th>Failed Builds</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for pipeline in pipeline_stats %}
+
+                <tr>
+
+                    <td>{{ pipeline.name }}</td>
+
+                    <td>{{ pipeline.project.name }}</td>
+
+                    <td>
+                        <span class="badge bg-primary">
+                            {{ pipeline.total_builds }}
+                        </span>
+                    </td>
+
+                    <td>
+
+                        {% if pipeline.failed_builds > 0 %}
+
+                            <span class="badge bg-danger">
+                                {{ pipeline.failed_builds }}
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-success">
+                                0
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="4">
+                        No analytics available.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

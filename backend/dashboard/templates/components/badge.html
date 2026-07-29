@@ -1,0 +1,15 @@
+{% if status == "SUCCESS" %}
+<span class="badge bg-success status-badge">SUCCESS</span>
+
+{% elif status == "FAILED" %}
+<span class="badge bg-danger status-badge">FAILED</span>
+
+{% elif status == "RUNNING" %}
+<span class="badge bg-warning text-dark status-badge">RUNNING</span>
+
+{% elif status == "PENDING" %}
+<span class="badge bg-secondary status-badge">PENDING</span>
+
+{% else %}
+<span class="badge bg-dark status-badge">{{ status }}</span>
+{% endif %}

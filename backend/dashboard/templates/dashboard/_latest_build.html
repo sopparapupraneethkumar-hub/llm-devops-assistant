@@ -1,0 +1,32 @@
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header">
+        <h4 class="mb-0">🚀 Latest Build</h4>
+    </div>
+
+    <div class="card-body">
+
+        {% if latest_build %}
+
+            <p><strong>Build Number:</strong> {{ latest_build.build_number }}</p>
+
+            <p><strong>Project:</strong> {{ latest_build.project_name }}</p>
+
+            <p>
+                <strong>Status:</strong>
+                {% include "components/badge.html" with status=latest_build.status %}
+            </p>
+
+            <p><strong>Branch:</strong> {{ latest_build.branch }}</p>
+
+            <p><strong>Duration:</strong> {{ latest_build.duration }} seconds</p>
+
+        {% else %}
+
+            <p>No builds available.</p>
+
+        {% endif %}
+
+    </div>
+
+</div>

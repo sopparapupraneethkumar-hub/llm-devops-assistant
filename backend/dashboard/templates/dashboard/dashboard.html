@@ -1,61 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row mb-4">
 
-    <div class="col">
-        <div class="card text-center shadow-sm">
-            <div class="card-body">
-                <h5>Total Builds</h5>
-                <h2>{{ total_builds }}</h2>
-            </div>
-        </div>
-    </div>
-
-    <div class="col">
-        <div class="card text-center shadow-sm">
-            <div class="card-body">
-                <h5>Successful</h5>
-                <h2 class="text-success">{{ successful_builds }}</h2>
-            </div>
-        </div>
-    </div>
-
-    <div class="col">
-        <div class="card text-center shadow-sm">
-            <div class="card-body">
-                <h5>Failed</h5>
-                <h2 class="text-danger">{{ failed_builds }}</h2>
-            </div>
-        </div>
-    </div>
-
-    <div class="col">
-        <div class="card text-center shadow-sm">
-            <div class="card-body">
-                <h5>Success Rate</h5>
-                <h2>{{ success_rate }}%</h2>
-            </div>
-        </div>
-    </div>
-
-    <div class="col">
-        <div class="card text-center shadow-sm">
-            <div class="card-body">
-                <h5>Average Duration</h5>
-                <h2>{{ average_duration }} sec</h2>
-            </div>
-        </div>
-    </div>
-
-</div>
+<!-- Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
 
     <div>
-        <h2 class="fw-bold mb-1">DevOps Dashboard</h2>
-        <p class="text-muted mb-0">
-            Monitor your CI/CD pipelines, builds and analytics
-        </p>
+        {% include "components/page_header.html" with title="DevOps Dashboard" subtitle="Monitor your CI/CD pipelines, builds and analytics." %}
     </div>
 
     <div>
@@ -65,376 +16,49 @@
     </div>
 
 </div>
+
+<!-- Quick Action -->
+<div class="mb-4">
+
+    {% include "components/button.html" with text="Create Pipeline" url="/pipelines/create/" btn_class="btn-primary" icon="bi bi-plus-circle" %}
+
+</div>
+
+<!-- KPI Cards -->
+{% include "dashboard/_kpi_cards.html" %}
+
+<!-- Latest Build + AI -->
 <div class="row">
 
     <div class="col-md-6">
-
-        <div class="card shadow-sm mb-4">
-
-            <div class="card-header">
-                <h4 class="mb-0">🚀 Latest Build</h4>
-            </div>
-
-            <div class="card-body">
-
-                {% if latest_build %}
-
-                    <p><strong>Build Number:</strong> {{ latest_build.build_number }}</p>
-
-                    <p><strong>Project:</strong> {{ latest_build.project_name }}</p>
-
-                    <p>
-                        <strong>Status:</strong>
-
-                        {% if latest_build.status == "SUCCESS" %}
-                            <span class="badge bg-success">SUCCESS</span>
-                        {% else %}
-                            <span class="badge bg-danger">FAILED</span>
-                        {% endif %}
-                    </p>
-
-                    <p><strong>Branch:</strong> {{ latest_build.branch }}</p>
-
-                    <p><strong>Duration:</strong> {{ latest_build.duration }} seconds</p>
-
-                {% else %}
-
-                    <p>No builds available.</p>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
+        {% include "dashboard/_latest_build.html" %}
     </div>
-
 
     <div class="col-md-6">
-
-        <div class="card shadow-sm mb-4">
-
-            <div class="card-header">
-                <h4 class="mb-0">🤖 AI Analysis</h4>
-            </div>
-
-            <div class="card-body">
-
-                {% if latest_build %}
-
-                    <pre class="mb-0">{{ latest_build.ai_summary }}</pre>
-
-                {% else %}
-
-                    <p>No AI analysis available.</p>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
+        {% include "dashboard/_ai_analysis.html" %}
     </div>
 
 </div>
 
-<div class="card shadow-sm mb-4">
+<!-- Projects -->
+{% include "dashboard/_projects.html" %}
 
-    <div class="card-header">
-        <h4 class="mb-0">📁 My Projects</h4>
-    </div>
+<!-- Analytics -->
+{% include "dashboard/_pipeline_analytics.html" %}
 
-    <div class="card-body">
+<!-- Trends -->
+{% include "dashboard/_build_trends.html" %}
 
-        {% if projects %}
+<!-- Charts -->
+{% include "dashboard/_charts.html" %}
 
-            {% for project in projects %}
+<!-- Recent Builds -->
+{% include "dashboard/_recent_builds.html" %}
 
-                <div class="card mb-3">
-
-                    <div class="card-body">
-
-                        <h5>{{ project.name }}</h5>
-
-                        <p>{{ project.description }}</p>
-
-                        <strong>Pipelines</strong>
-
-                        <ul>
-
-                            {% for pipeline in project.pipelines.all %}
-
-                                <li>
-                                    {{ pipeline.name }}
-
-                                    <span class="badge bg-secondary">
-                                        {{ pipeline.branch }}
-                                    </span>
-
-                                </li>
-
-                            {% empty %}
-
-                                <li>No pipelines created.</li>
-
-                            {% endfor %}
-
-                        </ul>
-
-                    </div>
-
-                </div>
-
-            {% endfor %}
-
-        {% else %}
-
-            <p>No projects available.</p>
-
-        {% endif %}
-
-    </div>
-</div>
-<div class="card shadow-sm mb-4">
-
-    <div class="card-header">
-        <h4 class="mb-0">📊 Pipeline Analytics</h4>
-    </div>
-
-    <div class="card-body">
-
-        <table class="table table-hover">
-
-            <thead>
-
-                <tr>
-                    <th>Pipeline</th>
-                    <th>Project</th>
-                    <th>Total Builds</th>
-                    <th>Failed Builds</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                {% for pipeline in pipeline_stats %}
-
-                <tr>
-
-                    <td>{{ pipeline.name }}</td>
-
-                    <td>{{ pipeline.project.name }}</td>
-
-                    <td>
-                        <span class="badge bg-primary">
-                            {{ pipeline.total_builds }}
-                        </span>
-                    </td>
-
-                    <td>
-
-                        {% if pipeline.failed_builds > 0 %}
-
-                            <span class="badge bg-danger">
-                                {{ pipeline.failed_builds }}
-                            </span>
-
-                        {% else %}
-
-                            <span class="badge bg-success">
-                                0
-                            </span>
-
-                        {% endif %}
-
-                    </td>
-
-                </tr>
-
-                {% empty %}
-
-                <tr>
-
-                    <td colspan="4">
-                        No analytics available.
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-<div class="card shadow-sm mb-4">
-
-    <div class="card-header">
-        <h4 class="mb-0">📅 Build Trends</h4>
-    </div>
-
-    <div class="card-body">
-
-        <table class="table table-striped">
-
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Total Builds</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                {% for trend in build_trends %}
-
-                <tr>
-                    <td>{{ trend.day }}</td>
-                    <td>
-                        <span class="badge bg-info">
-                            {{ trend.total_builds }}
-                        </span>
-                    </td>
-                </tr>
-
-                {% empty %}
-
-                <tr>
-                    <td colspan="2">No trend data available.</td>
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-<div class="card shadow-sm mb-4">
-
-    <div class="card-header">
-        <h4 class="mb-0">📈 Build Trend Chart</h4>
-    </div>
-
-    <div class="card-body">
-
-    <div style="position:relative;height:400px;width:100%;">
-        <canvas id="buildTrendChart"></canvas>
-    </div>
-
-</div>
-<div class="row">
-
-    <div class="col-lg-8">
-
-        <!-- Build Trend Chart Card -->
-
-    </div>
-
-    <div class="col-lg-4">
-
-        <!-- Pie Chart Card -->
-
-    </div>
-
-</div>
-<div class="card shadow-sm mb-4">
-
-    <div class="card-header">
-        <h4 class="mb-0">🥧 Build Status Distribution</h4>
-    </div>
-
-    <div class="card-body">
-
-        <div style="height:400px;">
-
-            <canvas id="buildStatusChart"></canvas>
-
-        </div>
-
-    </div>
-
-</div>
-
-</div>
-
-<div class="card shadow-sm">
-
-    <div class="card-header">
-        <h4 class="mb-0">📜 Recent Builds</h4>
-    </div>
-
-    <div class="card-body">
-
-        <table class="table table-hover">
-
-            <thead>
-
-                <tr>
-                    <th>Build</th>
-                    <th>Project</th>
-                    <th>Status</th>
-                    <th>Duration</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                {% for build in recent_builds %}
-
-                    <tr>
-
-                        <td>#{{ build.build_number }}</td>
-
-                        <td>{{ build.project_name }}</td>
-
-                        <td>
-
-                            {% if build.status == "SUCCESS" %}
-                                <span class="badge bg-success">
-                                    SUCCESS
-                                </span>
-                            {% else %}
-                                <span class="badge bg-danger">
-                                    FAILED
-                                </span>
-                            {% endif %}
-
-                        </td>
-
-                        <td>{{ build.duration }} sec</td>
-
-                    </tr>
-
-                {% empty %}
-
-                    <tr>
-
-                        <td colspan="4">
-                            No builds found.
-                        </td>
-
-                    </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
 {{ trend_labels|json_script:"trend-labels" }}
 {{ trend_data|json_script:"trend-data" }}
 
 {{ successful_builds|json_script:"successful-builds" }}
 {{ failed_builds|json_script:"failed-builds" }}
+
 {% endblock %}

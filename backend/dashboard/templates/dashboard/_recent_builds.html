@@ -1,0 +1,66 @@
+<div class="card shadow-sm">
+
+    <div class="card-header">
+        <h4 class="mb-0">📜 Recent Builds</h4>
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-hover">
+
+            <thead>
+
+                <tr>
+                    <th>Build</th>
+                    <th>Project</th>
+                    <th>Status</th>
+                    <th>Duration</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for build in recent_builds %}
+
+                <tr>
+
+                    <td>#{{ build.build_number }}</td>
+
+                    <td>{{ build.project_name }}</td>
+
+                    <td>
+
+                        {% include "components/badge.html" with status=build.status %}
+
+                    </td>
+
+                    <td>
+
+                        {{ build.duration }} sec
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="4">
+
+                        No builds found.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
