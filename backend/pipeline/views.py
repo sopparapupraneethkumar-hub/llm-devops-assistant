@@ -1,3 +1,4 @@
+from .services import JenkinsService
 from django.http import HttpResponse
 from django.shortcuts import (
     render,
@@ -5,12 +6,11 @@ from django.shortcuts import (
     get_object_or_404,
 )
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from .models import Pipeline
 from .forms import PipelineForm
-from django.contrib import messages
 from .services import JenkinsService
-
 
 @login_required
 def home(request):

@@ -6,6 +6,7 @@ class JenkinsService:
 
     @staticmethod
     def trigger_build(job_name):
+
         url = (
             f"{settings.JENKINS_URL}"
             f"/job/{job_name}/build"

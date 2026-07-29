@@ -1,10 +1,26 @@
 from google import genai
 from django.conf import settings
 
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
+
+def get_client():
+    api_key = getattr(settings, "GEMINI_API_KEY", None)
+
+    if not api_key:
+        return None
+
+    return genai.Client(api_key=api_key)
 
 
 def generate_build_summary(console_log):
+
+    if not console_log:
+        return "No console log available."
+
+    client = get_client()
+
+    if client is None:
+        return "Gemini API key is not configured."
+
     prompt = f"""
 You are an experienced DevOps engineer.
 
@@ -27,8 +43,8 @@ Console Log:
 
     try:
         response = client.models.generate_content(
-            model="gemini-flash-latest",
-            contents=prompt
+            model="gemini-2.5-flash",
+            contents=prompt,
         )
 
         return response.text
