@@ -127,3 +127,21 @@ class ProjectListCreateAPIView(ListCreateAPIView):
         serializer.save(
             owner=self.request.user
         )
+@login_required
+def project_detail(request, pk):
+
+    project = get_object_or_404(
+        Project,
+        pk=pk,
+        owner=request.user,
+    )
+
+    context = {
+        "project": project,
+    }
+
+    return render(
+        request,
+        "projects/project_detail.html",
+        context,
+    )

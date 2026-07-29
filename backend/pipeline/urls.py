@@ -5,6 +5,7 @@ from .views import (
     create_pipeline,
     edit_pipeline,
     delete_pipeline,
+    run_pipeline,
 )
 
 urlpatterns = [
@@ -21,4 +22,9 @@ urlpatterns = [
         delete_pipeline,
         name="delete_pipeline",
     ),
+    path(
+    "pipelines/<int:pipeline_id>/run/",
+    run_pipeline,
+    name="run_pipeline",
+),
 ]

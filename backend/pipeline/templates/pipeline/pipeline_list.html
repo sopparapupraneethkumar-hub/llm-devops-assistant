@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "layouts/dashboard_layout.html" %}
 
 {% block content %}
 
@@ -23,22 +23,24 @@
 </li>
 
 <br>
-<a href="/pipelines/{{ pipeline.id }}/edit/">
-
-Edit
-
+<a href="{% url 'edit_pipeline' pipeline.id %}"
+   class="btn btn-warning btn-sm">
+    Edit
 </a>
 
-|
+<a href="{% url 'run_pipeline' pipeline.id %}"
+   class="btn btn-success btn-sm">
+    ▶ Run Build
+</a>
 
-<a href="/pipelines/{{ pipeline.id }}/delete/">
-
-Delete
-
+<a href="{% url 'delete_pipeline' pipeline.id %}"
+   class="btn btn-danger btn-sm">
+    Delete
 </a>
 {% endfor %}
 
 </ul>
+
 
 {% endblock %}
 

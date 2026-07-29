@@ -16,21 +16,31 @@ class BuildCreateView(APIView):
 
     def post(self, request):
 
+        print("\n========== REQUEST RECEIVED ==========")
+        print(request.data)
+        print("Authenticated User:", request.user)
+        print("======================================\n")
+
         data = request.data.copy()
 
         job_name = data.pop("jenkins_job_name", None)
+
+        print("Jenkins Job Name:", job_name)
 
         serializer = BuildSerializer(data=data)
 
         if serializer.is_valid():
 
             try:
+
                 pipeline = Pipeline.objects.get(
                     owner=request.user,
                     jenkins_job_name=job_name
                 )
 
             except Pipeline.DoesNotExist:
+
+                print("Pipeline not found!")
 
                 return Response(
                     {
@@ -44,11 +54,14 @@ class BuildCreateView(APIView):
                 pipeline=pipeline
             )
 
-            ai_summary = generate_build_summary(build.console_log)
+            ai_summary = generate_build_summary(
+                build.console_log
+            )
 
             build.ai_summary = ai_summary
-
             build.save()
+
+            print("Build Saved:", build.build_number)
 
             return Response(
                 {
@@ -57,6 +70,8 @@ class BuildCreateView(APIView):
                 },
                 status=status.HTTP_201_CREATED,
             )
+
+        print(serializer.errors)
 
         return Response(
             serializer.errors,

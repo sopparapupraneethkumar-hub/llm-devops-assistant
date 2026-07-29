@@ -1,0 +1,63 @@
+.metric-title{
+
+    color:var(--text-light);
+
+    font-size:.9rem;
+
+    margin-bottom:8px;
+
+}
+
+.metric-value{
+
+    font-size:2rem;
+
+    font-weight:700;
+
+}
+
+.metric-icon{
+
+    font-size:2.5rem;
+
+    opacity:.9;
+
+}
+
+.dashboard-card{
+
+    transition:.25s;
+
+}
+
+.dashboard-card:hover{
+
+    transform:translateY(-6px);
+
+    box-shadow:0 20px 40px rgba(0,0,0,.08);
+
+}
+
+.page-title{
+
+    font-weight:700;
+
+}
+
+.page-subtitle{
+
+    color:var(--text-light);
+
+}
+
+.user-info strong{
+
+    font-size:.95rem;
+
+}
+
+.user-info small{
+
+    font-size:.8rem;
+
+}

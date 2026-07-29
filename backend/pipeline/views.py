@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Pipeline
 from .forms import PipelineForm
 from django.contrib import messages
+from .services import JenkinsService
 
 
 @login_required
@@ -137,3 +138,34 @@ def delete_pipeline(request, pipeline_id):
             "pipeline": pipeline
         }
     )
+
+
+
+@login_required
+def run_pipeline(request, pipeline_id):
+
+    pipeline = get_object_or_404(
+        Pipeline,
+        id=pipeline_id,
+        owner=request.user,
+    )
+
+    success = JenkinsService.trigger_build(
+        pipeline.jenkins_job_name
+    )
+
+    if success:
+
+        messages.success(
+            request,
+            "Build triggered successfully."
+        )
+
+    else:
+
+        messages.error(
+            request,
+            "Failed to trigger Jenkins build."
+        )
+
+    return redirect("pipeline_list")

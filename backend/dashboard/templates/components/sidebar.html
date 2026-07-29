@@ -1,0 +1,67 @@
+<div class="sidebar">
+
+    <div class="sidebar-header">
+
+        <h4>
+            <i class="bi bi-cpu-fill"></i>
+            LLM DevOps
+        </h4>
+
+    </div>
+
+    <ul class="sidebar-menu">
+
+        <li>
+            <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'pipeline_list' %}">
+                <i class="bi bi-diagram-3-fill"></i>
+                <span>Pipelines</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'create_pipeline' %}">
+                <i class="bi bi-plus-circle-fill"></i>
+                <span>Create Pipeline</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="#">
+                <i class="bi bi-folder-fill"></i>
+                <span>Projects</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="#">
+                <i class="bi bi-bar-chart-fill"></i>
+                <span>Reports</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="#">
+                <i class="bi bi-robot"></i>
+                <span>AI Analysis</span>
+            </a>
+        </li>
+
+    </ul>
+
+    <div class="sidebar-footer">
+
+        <a href="{% url 'logout' %}">
+            <i class="bi bi-box-arrow-right"></i>
+            Logout
+        </a>
+
+    </div>
+
+</div>

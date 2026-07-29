@@ -3,162 +3,52 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>LLM DevOps Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <title>{% block title %}LLM DevOps Assistant{% endblock %}</title>
+
+    <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap -->
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
+    <!-- Global CSS -->
+
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+
+    {% block extra_css %}
+    {% endblock %}
+
 </head>
 
 <body>
 
-    {% if user.is_authenticated %}
-    {% endif %}
+{% block body %}
+{% endblock %}
 
-    <div class="main-content">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-            <div class="container">
-
-                <a class="navbar-brand" href="{% url 'dashboard' %}">
-                    🚀 LLM DevOps Assistant
-                </a>
-
-                <button
-                    class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav">
-
-                    <span class="navbar-toggler-icon"></span>
-
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarNav">
-
-                    <ul class="navbar-nav me-auto">
-
-                        {% if user.is_authenticated %}
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard' %}">
-                                Dashboard
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'pipeline_list' %}">
-                                Pipelines
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'create_pipeline' %}">
-                                Create Pipeline
-                            </a>
-                        </li>
-
-                        {% endif %}
-
-                    </ul>
-
-                    <ul class="navbar-nav align-items-center">
-
-                        {% if user.is_authenticated %}
-
-                        <li class="nav-item">
-                            <span class="navbar-text me-3">
-                                Welcome, <strong>{{ user.username }}</strong>
-                            </span>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">
-                                Logout
-                            </a>
-                        </li>
-
-                        {% else %}
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">
-                                Register
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">
-                                Login
-                            </a>
-                        </li>
-
-                        {% endif %}
-
-                    </ul>
-
-                </div>
-
-            </div>
-
-        </nav>
-
-        {% if messages %}
-
-        <div class="container mt-3">
-
-            {% for message in messages %}
-
-            <div class="alert alert-warning alert-dismissible fade show">
-
-                {{ message }}
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert">
-                </button>
-
-            </div>
-
-            {% endfor %}
-
-        </div>
-
-        {% endif %}
-
-        <div class="container mt-5">
-
-            {% block content %}
-            {% endblock %}
-
-        </div>
-
-        <hr>
-
-        <footer class="text-center mb-4">
-
-            <p class="mb-0">
-                LLM DevOps Assistant © 2026
-            </p>
-
-        </footer>
-
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{% static 'js/dashboard.js' %}"></script>
+{% block extra_js %}
+{% endblock %}
 
 </body>
 
