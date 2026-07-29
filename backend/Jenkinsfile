@@ -73,6 +73,7 @@ pipeline {
                     "BRANCH_NAME=${env.BRANCH_NAME}",
                     "BUILD_STATUS=${env.BUILD_RESULT}",
                     "BUILD_DURATION=${durationSeconds}"
+                    "API_URL=http://host.docker.internal:8000/api/builds/",
 
                 ]) {
 
