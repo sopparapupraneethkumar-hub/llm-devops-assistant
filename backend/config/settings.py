@@ -18,6 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -28,9 +29,7 @@ SECRET_KEY = 'django-insecure-80qza9$g*pdgax@8s!r&k)fqkg%x2*dvjuh+gksql(0@fsbinq
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "host.docker.internal",
+    "*",
 ]
 
 
@@ -148,6 +147,7 @@ STATICFILES_DIRS = [
 ]
 LOGIN_URL = "/login/"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
 JENKINS_URL = "http://localhost:8080"
 
 JENKINS_USERNAME = "praneeth"
