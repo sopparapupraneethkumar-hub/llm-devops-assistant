@@ -13,7 +13,8 @@ JENKINS_URL = os.getenv(
 
 JENKINS_USERNAME = os.getenv("JENKINS_USERNAME")
 JENKINS_API_TOKEN = os.getenv("JENKINS_API_TOKEN")
-DJANGO_API_TOKEN = os.getenv("DJANGO_API_TOKEN")
+DJANGO_API_TOKEN = "6147012ef490c338eadb11977757e89285e3d359"
+print("DJANGO TOKEN =", DJANGO_API_TOKEN)
 
 
 def fetch_console_log():
@@ -93,25 +94,29 @@ def create_build_payload():
 def send_build_data(payload):
 
     headers = {
-
         "Authorization": f"Token {DJANGO_API_TOKEN}",
-
         "Content-Type": "application/json",
-
     }
 
-    try:
+    print("\n========== REQUEST ==========")
+    print("API_URL :", API_URL)
+    print("Headers :", headers)
+    print("Payload :", payload)
+    print("=============================\n")
 
+    try:
         response = requests.post(
             API_URL,
             json=payload,
             headers=headers,
         )
 
+        print("Response Status :", response.status_code)
+        print("Response Text :", response.text)
+
         return response
 
     except requests.exceptions.RequestException as e:
-
         print(e)
         return None
 
