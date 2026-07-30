@@ -1,0 +1,148 @@
+{% extends "layouts/dashboard_layout.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-header">
+
+<h4>
+
+Build #{{ build.build_number }}
+
+</h4>
+
+</div>
+
+<div class="card-body">
+
+<div class="row">
+
+<div class="col-md-6">
+
+<p>
+
+<strong>Status:</strong>
+
+{% if build.status == "SUCCESS" %}
+
+<span class="badge bg-success">
+
+SUCCESS
+
+</span>
+
+{% elif build.status == "FAILED" %}
+
+<span class="badge bg-danger">
+
+FAILED
+
+</span>
+
+{% elif build.status == "RUNNING" %}
+
+<span class="badge bg-warning">
+
+RUNNING
+
+</span>
+
+{% else %}
+
+<span class="badge bg-secondary">
+
+{{ build.status }}
+
+</span>
+
+{% endif %}
+
+</p>
+
+<p>
+
+<strong>Duration:</strong>
+
+{{ build.duration }} sec
+
+</p>
+
+<p>
+
+<strong>Project:</strong>
+
+{{ build.project_name }}
+
+</p>
+
+<p>
+
+<strong>Branch:</strong>
+
+{{ build.branch }}
+
+</p>
+
+<p>
+
+<strong>Created:</strong>
+
+{{ build.created_at }}
+
+</p>
+
+</div>
+
+<div class="col-md-6">
+
+<div class="card border-success">
+
+<div class="card-header">
+
+<strong>
+
+AI Analysis
+
+</strong>
+
+</div>
+
+<div class="card-body">
+
+{{ build.ai_summary|default:"AI analysis pending." }}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<hr>
+
+<h5>
+
+Console Log
+
+</h5>
+
+<pre
+class="bg-dark text-light p-3 rounded"
+style="max-height:500px;overflow:auto;"
+>
+
+{{ build.console_log|default:"Console log not available." }}
+
+</pre>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

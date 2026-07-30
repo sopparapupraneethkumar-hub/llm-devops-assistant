@@ -8,39 +8,35 @@ from ai_engine.services import generate_build_summary
 from .serializers import BuildSerializer
 from pipeline.models import Pipeline
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from ai_engine.services import generate_ai_summary
+
+from .models import Build
 
 class BuildCreateView(APIView):
 
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+    
 
     def post(self, request):
-
-        print("\n========== REQUEST RECEIVED ==========")
-        print(request.data)
-        print("Authenticated User:", request.user)
-        print("======================================\n")
 
         data = request.data.copy()
 
         job_name = data.pop("jenkins_job_name", None)
-
-        print("Jenkins Job Name:", job_name)
 
         serializer = BuildSerializer(data=data)
 
         if serializer.is_valid():
 
             try:
-
                 pipeline = Pipeline.objects.get(
                     owner=request.user,
                     jenkins_job_name=job_name
                 )
 
             except Pipeline.DoesNotExist:
-
-                print("Pipeline not found!")
 
                 return Response(
                     {
@@ -54,14 +50,12 @@ class BuildCreateView(APIView):
                 pipeline=pipeline
             )
 
-            ai_summary = generate_build_summary(
-                build.console_log
-            )
+            ai_summary = generate_build_summary(build.console_log)
 
             build.ai_summary = ai_summary
-            build.save()
 
-            print("Build Saved:", build.build_number)
+            build.save()
+            generate_ai_summary(build)
 
             return Response(
                 {
@@ -71,9 +65,25 @@ class BuildCreateView(APIView):
                 status=status.HTTP_201_CREATED,
             )
 
-        print(serializer.errors)
-
         return Response(
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+
+
+@login_required
+def build_detail(request, pk):
+
+    build = get_object_or_404(
+        Build,
+        pk=pk,
+    )
+
+    return render(
+        request,
+        "builds/build_detail.html",
+        {
+            "build": build,
+        },
+    )

@@ -138,3 +138,132 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+function updateRecentBuilds() {
+
+    fetch("/dashboard/recent-builds/")
+        .then(response => response.json())
+        .then(data => {
+
+            let html = "";
+
+            data.forEach(build => {
+
+                let badge = "bg-primary";
+
+                if (build.status === "SUCCESS")
+                    badge = "bg-success";
+
+                else if (build.status === "FAILED")
+                    badge = "bg-danger";
+
+                else if (build.status === "RUNNING")
+                    badge = "bg-warning";
+
+                html += `
+<tr>
+
+<td>
+
+<a href="/builds/${build.id}/">
+
+#${build.number}
+
+</a>
+
+</td>
+
+<td>
+
+<span class="badge ${badge}">
+
+${build.status}
+
+</span>
+
+</td>
+
+<td>
+
+${build.duration} sec
+
+</td>
+
+<td>
+
+${build.date}
+
+</td>
+
+</tr>
+`;
+
+            });
+
+            document.getElementById(
+                "recent-builds-table"
+            ).innerHTML = html;
+
+        });
+
+}
+function updateBuildStatus() {
+
+    fetch("/dashboard/build-status/")
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.status === "NO_BUILD") {
+                return;
+            }
+
+            document.getElementById("latest-build").innerText =
+                "#" + data.build_number;
+
+            document.getElementById("latest-status").innerText =
+                data.status;
+
+            document.getElementById("latest-duration").innerText =
+                data.duration + " sec";
+
+            const badge =
+                document.getElementById("latest-status");
+
+            badge.classList.remove(
+                "bg-primary",
+                "bg-success",
+                "bg-danger",
+                "bg-warning"
+            );
+
+            if (data.status === "SUCCESS") {
+
+                badge.classList.add("bg-success");
+
+            } else if (data.status === "FAILED") {
+
+                badge.classList.add("bg-danger");
+
+            } else if (data.status === "RUNNING") {
+
+                badge.classList.add("bg-warning");
+
+            } else {
+
+                badge.classList.add("bg-primary");
+
+            }
+
+        })
+        .catch(error => console.log(error));
+
+}
+
+updateBuildStatus();
+updateRecentBuilds();
+
+setInterval(function(){
+
+    updateBuildStatus();
+    updateRecentBuilds();
+
+},5000);

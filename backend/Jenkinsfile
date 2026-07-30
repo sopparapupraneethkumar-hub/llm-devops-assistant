@@ -23,11 +23,8 @@ pipeline {
         }
 
         stage('Verify Django Project') {
-
             steps {
-
                 script {
-
                     try {
 
                         sh '''
@@ -40,20 +37,28 @@ pipeline {
 
                         env.BUILD_RESULT = "SUCCESS"
 
-                    }
-
-                    catch(Exception e) {
+                    } catch(Exception e) {
 
                         env.BUILD_RESULT = "FAILED"
 
                         throw e
-
                     }
-
                 }
-
             }
+        }
 
+        stage('Verify send_build.py') {
+            steps {
+                sh '''
+                    cd backend
+
+                    echo "===== send_build.py ====="
+
+                    cat scripts/send_build.py
+
+                    echo "========================="
+                '''
+            }
         }
 
     }
@@ -94,13 +99,8 @@ pipeline {
                         python scripts/send_build.py
 
                     '''
-
                 }
-
             }
-
         }
-
     }
-
 }

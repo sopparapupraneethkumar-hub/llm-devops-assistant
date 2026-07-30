@@ -1,106 +1,99 @@
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.db.models import Avg,Count, Q
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.http import JsonResponse
+
 from builds.models import Build
-from projects.models import Project
 from pipeline.models import Pipeline
-from django.db.models.functions import TruncDate
+from dashboard.services.jenkins_service import trigger_build
+
 
 @login_required
 def dashboard(request):
 
-    user_builds = Build.objects.filter(owner=request.user)
+    builds = Build.objects.order_by("-created_at")
 
-    latest_build = user_builds.order_by("-created_at").first()
-
-    projects = (
-        Project.objects.filter(owner=request.user)
-        .prefetch_related("pipelines")
-    )
-
-    total_builds = user_builds.count()
-
-    successful_builds = user_builds.filter(
-        status="SUCCESS"
-    ).count()
-
-    failed_builds = user_builds.filter(
-        status="FAILED"
-    ).count()
-
-    success_rate = 0
-
-    if total_builds > 0:
-        success_rate = round(
-            (successful_builds / total_builds) * 100,
-            2,
-        )
-
-    recent_builds = user_builds.order_by("-created_at")[:5]
-
-    average_duration = (
-        user_builds.aggregate(
-            Avg("duration")
-        )["duration__avg"] or 0
-    )
-
-    average_duration = round(average_duration, 2)
-    pipeline_stats = (
-        Project.objects.filter(owner=request.user)
-        .prefetch_related("pipelines")
-    )
-
-    pipeline_stats = (
-        Pipeline.objects.filter(owner=request.user)
-        .select_related("project")
-        .annotate(
-            total_builds=Count("builds"),
-            failed_builds=Count(
-                "builds",
-                filter=Q(builds__status="FAILED")
-            ),
-        )
-        .order_by("-failed_builds", "-total_builds")
-    )
-    build_trends = (
-        user_builds
-        .annotate(
-            day=TruncDate("created_at")
-        )
-        .values("day")
-        .annotate(
-            total_builds=Count("id")
-        )
-        .order_by("-day")
-    )
-    trend_labels = []
-    trend_data = []
-
-    for trend in build_trends:
-        trend_labels.append(
-            trend["day"].strftime("%d %b")
-        )
-        trend_data.append(
-            trend["total_builds"]
-        )
     context = {
-    "latest_build": latest_build,
-    "projects": projects,
-    "total_builds": total_builds,
-    "successful_builds": successful_builds,
-    "failed_builds": failed_builds,
-    "success_rate": success_rate,
-    "average_duration": average_duration,
-    "recent_builds": recent_builds,
-    "pipeline_stats": pipeline_stats,
-    "build_trends": build_trends,
-    "trend_labels": trend_labels,
-    "trend_data": trend_data,
+        "latest_build": builds.first(),
+        "total_builds": builds.count(),
+        "successful_builds": builds.filter(status="SUCCESS").count(),
+        "failed_builds": builds.filter(status="FAILED").count(),
+        "running_builds": builds.filter(status="RUNNING").count(),
+        "recent_builds": builds[:5],
+        "recent_pipelines": Pipeline.objects.filter(
+            owner=request.user
+        ).order_by("-created_at")[:5],
     }
-
 
     return render(
         request,
         "dashboard/dashboard.html",
         context,
     )
+
+
+@login_required
+def run_build(request):
+
+    if request.method == "POST":
+
+        result = trigger_build()
+
+        if result["success"]:
+
+            messages.success(
+                request,
+                f"Build Queued Successfully (HTTP {result['status_code']})"
+            )
+
+        else:
+
+            messages.error(
+                request,
+                f"Jenkins Error: {result['message']}"
+            )
+
+    return redirect("dashboard")
+
+
+@login_required
+def build_status(request):
+
+    latest = Build.objects.order_by("-created_at").first()
+
+    if latest is None:
+
+        return JsonResponse({
+            "status": "NO_BUILD"
+        })
+
+    return JsonResponse({
+        "id": latest.id,
+        "status": latest.status,
+        "build_number": latest.build_number,
+        "duration": latest.duration,
+        "created_at": latest.created_at,
+        "summary": latest.ai_summary,
+    })
+
+
+@login_required
+def recent_builds(request):
+
+    builds = Build.objects.order_by("-created_at")[:5]
+
+    data = []
+
+    for build in builds:
+
+        data.append({
+
+            "id": build.id,
+            "number": build.build_number,
+            "status": build.status,
+            "duration": build.duration,
+            "date": build.created_at.strftime("%d %b %Y %H:%M")
+
+        })
+
+    return JsonResponse(data, safe=False)

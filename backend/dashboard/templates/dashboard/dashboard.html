@@ -1,64 +1,324 @@
 {% extends "layouts/dashboard_layout.html" %}
+{% load static %}
 
 {% block content %}
 
-<!-- Header -->
-<div class="d-flex justify-content-between align-items-center mb-4">
+{% include "components/page_header.html" with title="Dashboard" subtitle="Monitor CI/CD pipelines and AI build analysis" %}
 
-    <div>
-        {% include "components/page_header.html" with title="DevOps Dashboard" subtitle="Monitor your CI/CD pipelines, builds and analytics." %}
+<div class="row g-4 mb-4">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6>Total Builds</h6>
+                <h2>{{ total_builds }}</h2>
+            </div>
+        </div>
     </div>
 
-    <div>
-        <span class="badge bg-success fs-6">
-            ● System Online
-        </span>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6>Successful</h6>
+                <h2 class="text-success">
+                    {{ successful_builds }}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6>Failed</h6>
+                <h2 class="text-danger">
+                    {{ failed_builds }}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h6>Running</h6>
+                <h2 class="text-warning">
+                    {{ running_builds }}
+                </h2>
+            </div>
+        </div>
     </div>
 
 </div>
 
-<!-- Quick Action -->
-<div class="mb-4">
-
-    {% include "components/button.html" with text="Create Pipeline" url="/pipelines/create/" btn_class="btn-primary" icon="bi bi-plus-circle" %}
-
-</div>
-
-<!-- KPI Cards -->
-{% include "dashboard/_kpi_cards.html" %}
-
-<!-- Latest Build + AI -->
 <div class="row">
 
-    <div class="col-md-6">
-        {% include "dashboard/_latest_build.html" %}
+    <!-- LEFT COLUMN -->
+    <div class="col-lg-8">
+
+        <!-- Latest Build -->
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header">
+                <h5 class="mb-0">
+                    Latest Build
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                {% if latest_build %}
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <h6>Build Number</h6>
+
+                        <h3 id="latest-build">
+                            #{{ latest_build.build_number }}
+                        </h3>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h6>Status</h6>
+
+                        <span
+                            id="latest-status"
+                            class="badge bg-primary fs-6"
+                        >
+                            {{ latest_build.status }}
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <h6>Duration</h6>
+
+                        <h5 id="latest-duration">
+                            {{ latest_build.duration }} sec
+                        </h5>
+
+                    </div>
+
+                </div>
+
+                {% else %}
+
+                <p class="text-muted mb-0">
+                    No builds available.
+                </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <!-- Recent Builds -->
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header">
+
+                <h5 class="mb-0">
+                    Recent Builds
+                </h5>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Build</th>
+                            <th>Status</th>
+                            <th>Duration</th>
+                            <th>Date</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="recent-builds-table">
+
+                        {% for build in recent_builds %}
+
+                        <tr>
+                            <td>
+
+                                <a
+                                    href="{% url 'build_detail' build.id %}"
+                                    class="text-decoration-none fw-semibold"
+                                >
+
+                                    #{{ build.build_number }}
+
+                                </a>
+
+                            </td>
+
+
+                            <td>
+
+                                {% include "components/badge.html" with status=build.status %}
+
+                            </td>
+
+                            <td>
+
+                                {{ build.duration }} sec
+
+                            </td>
+
+                            <td>
+
+                                {{ build.created_at|date:"d M Y H:i" }}
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="4">
+
+                                No Builds Found
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="col-md-6">
-        {% include "dashboard/_ai_analysis.html" %}
+    <!-- RIGHT COLUMN -->
+
+    <div class="col-lg-4">
+
+        <!-- Quick Actions -->
+
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-header">
+
+                <h5>
+
+                    Quick Actions
+
+                </h5>
+
+            </div>
+
+            <div class="card-body d-grid gap-3">
+
+                <a
+                    href="{% url 'create_pipeline' %}"
+                    class="btn btn-primary"
+                >
+
+                    Create Pipeline
+
+                </a>
+
+                <form
+                    method="post"
+                    action="{% url 'run_build' %}"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        class="btn btn-success w-100"
+                    >
+
+                        <i class="bi bi-play-fill"></i>
+
+                        Run Build
+
+                    </button>
+
+                </form>
+
+                <button class="btn btn-warning">
+
+                    AI Analysis
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- Recent Pipelines -->
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header">
+
+                <h5>
+
+                    Recent Pipelines
+
+                </h5>
+
+            </div>
+
+            <div class="list-group list-group-flush">
+
+                {% for pipeline in recent_pipelines %}
+
+                <div class="list-group-item">
+
+                    <strong>
+
+                        {{ pipeline.name }}
+
+                    </strong>
+
+                    <br>
+
+                    <small>
+
+                        {{ pipeline.repository_url }}
+
+                    </small>
+
+                </div>
+
+                {% empty %}
+
+                <div class="list-group-item">
+
+                    No Pipelines
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
     </div>
 
 </div>
 
-<!-- Projects -->
-{% include "dashboard/_projects.html" %}
-
-<!-- Analytics -->
-{% include "dashboard/_pipeline_analytics.html" %}
-
-<!-- Trends -->
-{% include "dashboard/_build_trends.html" %}
-
-<!-- Charts -->
-{% include "dashboard/_charts.html" %}
-
-<!-- Recent Builds -->
-{% include "dashboard/_recent_builds.html" %}
-
-{{ trend_labels|json_script:"trend-labels" }}
-{{ trend_data|json_script:"trend-data" }}
-
-{{ successful_builds|json_script:"successful-builds" }}
-{{ failed_builds|json_script:"failed-builds" }}
+<script src="{% static 'js/dashboard.js' %}"></script>
 
 {% endblock %}
