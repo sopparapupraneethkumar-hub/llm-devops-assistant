@@ -226,6 +226,7 @@
                 <div class="card-body">
 
                     {% if latest_build %}
+                    
 
                     <div class="row text-center">
 
@@ -610,22 +611,15 @@
 
                     {% if latest_build %}
 
-                    <div style="max-height:220px;overflow:auto;">
-
-                        {{ latest_build.ai_summary|linebreaks }}
-
-                    </div>
-
+                    <div
+                    id="latest-ai-summary" 
+                    style="max-height:220px;overflow:auto;">
+                    {% if latest_build %}
+                    {{ latest_build.ai_summary|linebreaks }}
                     {% else %}
-
-                    <p class="text-muted">
-
-                        No AI Summary Available
-
-                    </p>
-
+                    No AI Summary Available
                     {% endif %}
-
+                    </div>
                 </div>
 
             </div>
