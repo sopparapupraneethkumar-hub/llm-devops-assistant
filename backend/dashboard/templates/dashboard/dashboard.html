@@ -3,387 +3,949 @@
 
 {% block content %}
 
-{% include "components/page_header.html" with title="Dashboard" subtitle="Monitor CI/CD pipelines and AI build analysis" %}
+<div class="container-fluid">
 
-<div class="row g-4 mb-4">
+    <!-- Welcome Banner -->
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h6>Total Builds</h6>
-                <h2>{{ total_builds }}</h2>
-            </div>
-        </div>
-    </div>
+    <div class="card border-0 shadow-lg mb-4"
+         style="background:linear-gradient(135deg,#2563eb,#1e40af);border-radius:18px;">
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h6>Successful</h6>
-                <h2 class="text-success">
-                    {{ successful_builds }}
-                </h2>
-            </div>
-        </div>
-    </div>
+        <div class="card-body p-5">
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h6>Failed</h6>
-                <h2 class="text-danger">
-                    {{ failed_builds }}
-                </h2>
-            </div>
-        </div>
-    </div>
+            <div class="row align-items-center">
 
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h6>Running</h6>
-                <h2 class="text-warning">
-                    {{ running_builds }}
-                </h2>
-            </div>
-        </div>
-    </div>
+                <div class="col-lg-8">
 
-    <div class="col-md-3">
-    <div class="card shadow-sm">
-        <div class="card-body text-center">
-            <h6>Total Projects</h6>
-            <h3>{{ total_projects }}</h3>
-        </div>
-    </div>
-</div>
+                    <h2 class="text-white fw-bold mb-2">
 
-</div>
+                        Welcome back,
+                        {{ request.user.username }} 👋
 
-<div class="row">
+                    </h2>
 
-    <!-- LEFT COLUMN -->
-    <div class="col-lg-8">
+                    <p class="text-white mb-0 fs-5">
 
-        <!-- Latest Build -->
-        <div class="card shadow-sm border-0 mb-4">
+                        Monitor your CI/CD pipelines,
+                        Jenkins builds,
+                        AI-powered analysis,
+                        and project health from one dashboard.
 
-            <div class="card-header">
-                <h5 class="mb-0">
-                    Latest Build
-                </h5>
+                    </p>
+
+                </div>
+
+                <div class="col-lg-4 text-end">
+
+                    <i class="bi bi-cpu-fill text-white"
+                       style="font-size:90px;opacity:.25;"></i>
+
+                </div>
+
             </div>
 
-            <div class="card-body">
+        </div>
 
-                {% if latest_build %}
+    </div>
 
-                <div class="row">
+    <!-- KPI Cards -->
 
-                    <div class="col-md-4">
-                        <h6>Build Number</h6>
+    <div class="row g-4 mb-4">
 
-                        <h3 id="latest-build">
-                            #{{ latest_build.build_number }}
-                        </h3>
-                    </div>
+        <div class="col-xl-3 col-md-6">
 
-                    <div class="col-md-4">
-                        <h6>Status</h6>
+            <div class="card border-0 shadow dashboard-stat">
 
-                        <span
-                            id="latest-status"
-                            class="badge bg-primary fs-6"
-                        >
-                            {{ latest_build.status }}
-                        </span>
+                <div class="card-body">
 
-                    </div>
+                    <div class="d-flex justify-content-between">
 
-                    <div class="col-md-4">
+                        <div>
 
-                        <h6>Duration</h6>
+                            <small class="text-muted">
 
-                        <h5 id="latest-duration">
-                            {{ latest_build.duration }} sec
-                        </h5>
+                                Total Builds
+
+                            </small>
+                            <h2 class="fw-bold mt-2" id="total-builds">
+
+                                {{ total_builds }}
+
+                            </h2>
+
+                        </div>
+
+                        <div class="icon-circle bg-primary">
+
+                            <i class="bi bi-hammer text-white fs-3"></i>
+
+                        </div>
 
                     </div>
 
                 </div>
 
-                {% else %}
+            </div>
 
-                <p class="text-muted mb-0">
-                    No builds available.
-                </p>
+        </div>
 
-                {% endif %}
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card border-0 shadow dashboard-stat">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <small class="text-muted">
+
+                                Successful
+
+                            </small>
+                            <h2 class="fw-bold text-success mt-2" id="success-builds">
+
+                                {{ successful_builds }}
+
+                            </h2>
+                        </div>
+
+                        <div class="icon-circle bg-success">
+
+                            <i class="bi bi-check-circle-fill text-white fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
 
-        <!-- Recent Builds -->
+        <div class="col-xl-3 col-md-6">
 
-        <div class="card shadow-sm border-0">
+            <div class="card border-0 shadow dashboard-stat">
 
-            <div class="card-header">
+                <div class="card-body">
 
-                <h5 class="mb-0">
-                    Recent Builds
-                </h5>
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <small class="text-muted">
+
+                                Failed
+
+                            </small>
+
+                            </h2>
+                            <h2 class="fw-bold text-danger mt-2" id="failed-builds">
+
+                                {{ failed_builds }}
+
+                            </h2>
+
+                        </div>
+
+                        <div class="icon-circle bg-danger">
+
+                            <i class="bi bi-x-circle-fill text-white fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
-            <div class="table-responsive">
+        </div>
 
-                <table class="table align-middle">
+        <div class="col-xl-3 col-md-6">
 
-                    <thead>
+            <div class="card border-0 shadow dashboard-stat">
 
-                        <tr>
+                <div class="card-body">
 
-                            <th>Build</th>
-                            <th>Status</th>
-                            <th>Duration</th>
-                            <th>Date</th>
+                    <div class="d-flex justify-content-between">
 
-                        </tr>
+                        <div>
 
-                    </thead>
+                            <small class="text-muted">
 
-                    <tbody id="recent-builds-table">
+                                Running
+
+                            </small>
+
+                            <h2 class="fw-bold text-warning mt-2" id="running-builds">
+
+                                {{ running_builds }}
+
+                            </h2>
+
+                        </div>
+
+                        <div class="icon-circle bg-warning">
+
+                            <i class="bi bi-play-circle-fill text-white fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Main Content -->
+
+    <div class="row">
+
+        <!-- LEFT -->
+
+        <div class="col-lg-8">
+                        <!-- Latest Build -->
+
+            <div class="card border-0 shadow-lg mb-4 rounded-4">
+
+                <div class="card-header bg-white border-0 py-3">
+
+                    <h4 class="fw-bold mb-0">
+                        <i class="bi bi-lightning-charge-fill text-warning"></i>
+                        Latest Build
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if latest_build %}
+
+                    <div class="row text-center">
+
+                        <div class="col-md-3">
+
+                            <small class="text-muted d-block">
+
+                                Build
+
+                            </small>
+
+                            <h2 class="fw-bold" id="latest-build">
+
+                                #{{ latest_build.build_number }}
+
+                            </h2>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <small class="text-muted d-block">
+
+                                Status
+
+                            </small>
+                            <span
+                            id="latest-status"
+                            class="badge
+                            {% if latest_build.status == 'SUCCESS' %}
+                            bg-success
+                            {% elif latest_build.status == 'FAILED' %}
+                            bg-danger
+                            {% elif latest_build.status == 'RUNNING' %}
+                            bg-warning
+                            {% else %}
+                            bg-secondary
+                            {% endif %}">
+
+                            {{ latest_build.status }}
+
+                            </span>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <small class="text-muted d-block">
+
+                                Duration
+
+                            </small>
+
+                            <h4 id="latest-duration">
+
+                                {{ latest_build.duration }} sec
+
+                            </h4>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <small class="text-muted d-block">
+
+                                AI Analysis
+
+                            </small>
+
+                            <a href="{% url 'build_detail' latest_build.id %}"
+
+                               class="btn btn-outline-primary btn-sm mt-2">
+
+                                View Analysis
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="alert alert-info">
+
+                        No builds available.
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- Recent Builds -->
+
+            <div class="card border-0 shadow-lg rounded-4">
+
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between">
+
+                    <h4 class="fw-bold mb-0">
+
+                        <i class="bi bi-clock-history"></i>
+
+                        Recent Builds
+
+                    </h4>
+
+                    <span class="badge bg-primary">
+
+                        {{ total_builds }} Total
+
+                    </span>
+
+                </div>
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th>#</th>
+
+                                <th>Status</th>
+
+                                <th>Duration</th>
+
+                                <th>Date</th>
+
+                                <th></th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="recent-builds-table">
 
                         {% for build in recent_builds %}
 
-                        <tr>
-                            <td>
+                            <tr>
 
-                                <a
-                                    href="{% url 'build_detail' build.id %}"
-                                    class="text-decoration-none fw-semibold"
-                                >
+                                <td>
 
-                                    #{{ build.build_number }}
+                                    <strong>
 
-                                </a>
+                                        #{{ build.build_number }}
 
-                            </td>
+                                    </strong>
 
+                                </td>
 
-                            <td>
+                                <td>
 
-                                {% include "components/badge.html" with status=build.status %}
+                                    {% include "components/badge.html" with status=build.status %}
 
-                            </td>
+                                </td>
 
-                            <td>
+                                <td>
 
-                                {{ build.duration }} sec
+                                    {{ build.duration }} sec
 
-                            </td>
+                                </td>
 
-                            <td>
+                                <td>
 
-                                {{ build.created_at|date:"d M Y H:i" }}
+                                    {{ build.created_at|date:"d M Y H:i" }}
 
-                            </td>
+                                </td>
 
-                        </tr>
+                                <td>
+
+                                    <a href="{% url 'build_detail' build.id %}"
+
+                                       class="btn btn-sm btn-outline-primary">
+
+                                        Open
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
 
                         {% empty %}
 
-                        <tr>
+                            <tr>
 
-                            <td colspan="4">
+                                <td colspan="5" class="text-center">
 
-                                No Builds Found
+                                    No Builds Available
 
-                            </td>
+                                </td>
 
-                        </tr>
+                            </tr>
 
                         {% endfor %}
 
-                    </tbody>
+                        </tbody>
 
-                </table>
-
-            </div>
-
-        </div>
-
-    </div>
-    <div class="card mt-4 shadow-sm">
-
-        <div class="card-header">
-            <h5 class="mb-0">Recent Projects</h5>
-        </div>
-
-        <div class="card-body">
-
-            {% if recent_projects %}
-
-            <table class="table table-hover">
-
-                <thead>
-
-                    <tr>
-                        <th>Name</th>
-                        <th>Technology</th>
-                        <th>Status</th>
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {% for project in recent_projects %}
-
-                    <tr>
-
-                        <td>
-                            <a href="{% url 'project_detail' project.id %}">
-                                {{ project.name }}
-                            </a>
-                        </td>
-
-                        <td>{{ project.technology }}</td>
-
-                        <td>
-                            <span class="badge bg-success">
-                                {{ project.status }}
-                            </span>
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-            {% else %}
-
-            <p class="text-muted">No projects available.</p>
-
-            {% endif %}
-
-        </div>
-
-    </div>
-
-    <!-- RIGHT COLUMN -->
-
-    <div class="col-lg-4">
-
-        <!-- Quick Actions -->
-
-        <div class="card shadow-sm border-0 mb-4">
-
-            <div class="card-header">
-
-                <h5>
-
-                    Quick Actions
-
-                </h5>
-
-            </div>
-
-            <div class="card-body d-grid gap-3">
-
-                <a
-                    href="{% url 'create_pipeline' %}"
-                    class="btn btn-primary"
-                >
-
-                    Create Pipeline
-
-                </a>
-
-                <form
-                    method="post"
-                    action="{% url 'run_build' %}"
-                >
-
-                    {% csrf_token %}
-
-                    <button
-                        class="btn btn-success w-100"
-                    >
-
-                        <i class="bi bi-play-fill"></i>
-
-                        Run Build
-
-                    </button>
-
-                </form>
-
-                <button class="btn btn-warning">
-
-                    AI Analysis
-
-                </button>
-
-            </div>
-
-        </div>
-
-        <!-- Recent Pipelines -->
-
-        <div class="card shadow-sm border-0">
-
-            <div class="card-header">
-
-                <h5>
-
-                    Recent Pipelines
-
-                </h5>
-
-            </div>
-
-            <div class="list-group list-group-flush">
-
-                {% for pipeline in recent_pipelines %}
-
-                <div class="list-group-item">
-
-                    <strong>
-
-                        {{ pipeline.name }}
-
-                    </strong>
-
-                    <br>
-
-                    <small>
-
-                        {{ pipeline.repository_url }}
-
-                    </small>
+                    </table>
 
                 </div>
 
-                {% empty %}
+            </div>
 
-                <div class="list-group-item">
+        </div>
 
-                    No Pipelines
+
+
+
+
+        <!-- RIGHT SIDE -->
+
+        <div class="col-lg-4">
+
+            <!-- Quick Actions -->
+
+            <div class="card border-0 shadow-lg rounded-4 mb-4">
+
+                <div class="card-header bg-white border-0">
+
+                    <h4 class="fw-bold">
+
+                        Quick Actions
+
+                    </h4>
 
                 </div>
 
-                {% endfor %}
+                <div class="card-body">
+
+                    <div class="d-grid gap-3">
+
+                        <a href="{% url 'create_pipeline' %}"
+
+                           class="btn btn-primary btn-lg">
+
+                            <i class="bi bi-plus-circle-fill"></i>
+
+                            Create Pipeline
+
+                        </a>
+
+                        <form method="post"
+
+                              action="{% url 'run_build' %}">
+
+                            {% csrf_token %}
+
+                            <button
+
+                                class="btn btn-success btn-lg w-100">
+
+                                <i class="bi bi-play-fill"></i>
+
+                                Run Build
+
+                            </button>
+
+                        </form>
+
+                        <a href="#"
+
+                           class="btn btn-warning btn-lg">
+
+                            <i class="bi bi-robot"></i>
+
+                            AI Analysis
+
+                        </a>
+
+                        <a href="#"
+
+                           class="btn btn-dark btn-lg">
+
+                            <i class="bi bi-bar-chart-fill"></i>
+
+                            Reports
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Recent Activity -->
+
+            <div class="card border-0 shadow-lg rounded-4 mb-4">
+
+                <div class="card-header bg-white border-0">
+
+                    <h4 class="fw-bold">
+
+                        Recent Activity
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if latest_build %}
+
+                    <ul class="list-group list-group-flush">
+
+                        <li class="list-group-item">
+
+                            ✅ Build
+
+                            #{{ latest_build.build_number }}
+
+                            completed
+
+                        </li>
+
+                        <li class="list-group-item">
+
+                            🤖 AI Analysis Generated
+
+                        </li>
+
+                        <li class="list-group-item">
+
+                            📦 Status
+
+                            {{ latest_build.status }}
+
+                        </li>
+
+                        <li class="list-group-item">
+
+                            ⏱ Duration
+
+                            {{ latest_build.duration }}
+
+                            sec
+
+                        </li>
+
+                    </ul>
+
+                    {% else %}
+
+                    <p class="text-muted">
+
+                        No recent activity.
+
+                    </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+
+            <!-- AI Summary -->
+
+            <div class="card border-0 shadow-lg rounded-4">
+
+                <div class="card-header bg-white border-0">
+
+                    <h4 class="fw-bold">
+
+                        AI Summary
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if latest_build %}
+
+                    <div style="max-height:220px;overflow:auto;">
+
+                        {{ latest_build.ai_summary|linebreaks }}
+
+                    </div>
+
+                    {% else %}
+
+                    <p class="text-muted">
+
+                        No AI Summary Available
+
+                    </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+                    <!-- Recent Pipelines -->
+
+            <div class="card border-0 shadow-lg rounded-4 mt-4">
+
+                <div class="card-header bg-white border-0">
+
+                    <h4 class="fw-bold">
+
+                        <i class="bi bi-diagram-3-fill text-primary"></i>
+
+                        Recent Pipelines
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if recent_pipelines %}
+
+                        {% for pipeline in recent_pipelines %}
+
+                        <div class="border rounded-3 p-3 mb-3">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <div>
+
+                                    <h6 class="fw-bold mb-1">
+
+                                        {{ pipeline.name }}
+
+                                    </h6>
+
+                                    <small class="text-muted">
+
+                                        {{ pipeline.repository_url }}
+
+                                    </small>
+
+                                </div>
+
+                                <a href="{% url 'pipeline_detail' pipeline.id %}"
+
+                                   class="btn btn-outline-primary btn-sm">
+
+                                    Open
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <div class="alert alert-light">
+
+                            No Pipelines Found
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+
+
+
+            <!-- Recent Projects -->
+
+            <div class="card border-0 shadow-lg rounded-4 mt-4">
+
+                <div class="card-header bg-white border-0">
+
+                    <h4 class="fw-bold">
+
+                        <i class="bi bi-folder-fill text-warning"></i>
+
+                        Recent Projects
+
+                    </h4>
+
+                </div>
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th>Name</th>
+
+                                <th>Technology</th>
+
+                                <th>Status</th>
+
+                                <th></th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        {% for project in recent_projects %}
+
+                            <tr>
+
+                                <td>
+
+                                    <strong>
+
+                                        {{ project.name }}
+
+                                    </strong>
+
+                                </td>
+
+                                <td>
+
+                                    {{ project.technology }}
+
+                                </td>
+
+                                <td>
+
+                                    <span class="badge bg-success">
+
+                                        {{ project.status }}
+
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    <a href="{% url 'project_detail' project.id %}"
+
+                                       class="btn btn-sm btn-outline-primary">
+
+                                        Open
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td colspan="4"
+
+                                    class="text-center">
+
+                                    No Projects Available
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Build Health -->
+
+            <div class="card border-0 shadow-lg rounded-4 mt-4">
+
+                <div class="card-header bg-white border-0">
+
+                    <h4 class="fw-bold">
+
+                        <i class="bi bi-heart-pulse-fill text-danger"></i>
+
+                        Build Health
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row text-center">
+
+                        <div class="col-4">
+
+                            <h3 class="text-success">
+
+                                {{ successful_builds }}
+
+                            </h3>
+
+                            <small>
+
+                                Successful
+
+                            </small>
+
+                        </div>
+
+                        <div class="col-4">
+
+                            <h3 class="text-danger">
+
+                                {{ failed_builds }}
+
+                            </h3>
+
+                            <small>
+
+                                Failed
+
+                            </small>
+
+                        </div>
+
+                        <div class="col-4">
+
+                            <h3 class="text-warning">
+
+                                {{ running_builds }}
+
+                            </h3>
+
+                            <small>
+
+                                Running
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Footer -->
+
+    <footer class="mt-5">
+
+        <div class="card border-0 shadow rounded-4">
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-lg-6">
+
+                        <h5 class="fw-bold">
+
+                            LLM DevOps Assistant
+
+                        </h5>
+
+                        <p class="text-muted mb-0">
+
+                            AI Powered CI/CD Monitoring Platform
+
+                        </p>
+
+                    </div>
+
+                    <div class="col-lg-6 text-end">
+
+                        <small class="text-muted">
+
+                            Version 1.0
+
+                        </small>
+
+                        <br>
+
+                        <small class="text-muted">
+
+                            Django • Jenkins • Gemini • Bootstrap
+
+                        </small>
+
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
 
-    </div>
+    </footer>
 
 </div>
 
