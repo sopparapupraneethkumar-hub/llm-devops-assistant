@@ -1,4 +1,3 @@
-from .services import JenkinsService
 from django.http import HttpResponse
 from django.shortcuts import (
     render,
@@ -8,9 +7,11 @@ from django.shortcuts import (
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
+from builds.models import Build
 from .models import Pipeline
 from .forms import PipelineForm
 from .services import JenkinsService
+
 
 @login_required
 def home(request):
@@ -25,14 +26,15 @@ def pipeline_list(request):
     )
 
     context = {
-        "pipelines": pipelines
+        "pipelines": pipelines,
     }
 
     return render(
         request,
         "pipeline/pipeline_list.html",
-        context
+        context,
     )
+
 
 @login_required
 def create_pipeline(request):
@@ -40,29 +42,32 @@ def create_pipeline(request):
     projects = request.user.projects.all()
 
     if not projects.exists():
+
         messages.warning(
             request,
-            "You need to create a project before creating a pipeline."
+            "You need to create a project before creating a pipeline.",
         )
+
         return redirect("project_create")
 
     if request.method == "POST":
+
         form = PipelineForm(
             request.POST,
-            user=request.user
+            user=request.user,
         )
 
         if form.is_valid():
 
-            pipeline = form.save(commit=False)
+            pipeline = form.save(
+                commit=False
+            )
 
             pipeline.owner = request.user
 
             pipeline.save()
 
-            return redirect("/pipelines/")
-
-        print(form.errors)
+            return redirect("pipeline_list")
 
     else:
 
@@ -74,8 +79,8 @@ def create_pipeline(request):
         request,
         "pipeline/create_pipeline.html",
         {
-            "form": form
-        }
+            "form": form,
+        },
     )
 
 
@@ -97,8 +102,12 @@ def edit_pipeline(request, pipeline_id):
         )
 
         if form.is_valid():
+
             form.save()
-            return redirect("/pipelines/")
+
+            return redirect(
+                "pipeline_list"
+            )
 
     else:
 
@@ -111,8 +120,9 @@ def edit_pipeline(request, pipeline_id):
         request,
         "pipeline/edit_pipeline.html",
         {
-            "form": form
-        }
+            "form": form,
+            "pipeline": pipeline,
+        },
     )
 
 
@@ -129,16 +139,17 @@ def delete_pipeline(request, pipeline_id):
 
         pipeline.delete()
 
-        return redirect("/pipelines/")
+        return redirect(
+            "pipeline_list"
+        )
 
     return render(
         request,
         "pipeline/delete_pipeline.html",
         {
-            "pipeline": pipeline
-        }
+            "pipeline": pipeline,
+        },
     )
-
 
 
 @login_required
@@ -158,14 +169,93 @@ def run_pipeline(request, pipeline_id):
 
         messages.success(
             request,
-            "Build triggered successfully."
+            "Build triggered successfully.",
         )
 
     else:
 
         messages.error(
             request,
-            "Failed to trigger Jenkins build."
+            "Failed to trigger Jenkins build.",
         )
 
-    return redirect("pipeline_list")
+    return redirect(
+        "pipeline_list"
+    )
+
+
+@login_required
+def pipeline_detail(request, pipeline_id):
+
+    pipeline = get_object_or_404(
+        Pipeline,
+        id=pipeline_id,
+        owner=request.user,
+    )
+
+    builds = Build.objects.filter(
+        pipeline=pipeline
+    ).order_by("-created_at")
+
+    total_builds = builds.count()
+
+    success_count = builds.filter(
+        status="SUCCESS"
+    ).count()
+
+    failed_count = builds.filter(
+        status="FAILED"
+    ).count()
+
+    running_count = builds.filter(
+        status="RUNNING"
+    ).count()
+
+    success_rate = 0
+
+    if total_builds:
+
+        success_rate = round(
+            (success_count / total_builds) * 100,
+            2,
+        )
+
+    avg_duration = 0
+
+    if total_builds:
+
+        avg_duration = round(
+            sum(
+                build.duration
+                for build in builds
+            ) / total_builds,
+            2,
+        )
+
+    recent_builds = builds[:10]
+
+    context = {
+
+        "pipeline": pipeline,
+
+        "recent_builds": recent_builds,
+
+        "total_builds": total_builds,
+
+        "success_count": success_count,
+
+        "failed_count": failed_count,
+
+        "running_count": running_count,
+
+        "success_rate": success_rate,
+
+        "avg_duration": avg_duration,
+
+    }
+
+    return render(
+        request,
+        "pipeline/pipeline_detail.html",
+        context,
+    )

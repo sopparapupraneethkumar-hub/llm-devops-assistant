@@ -13,8 +13,8 @@ JENKINS_URL = os.getenv(
 
 JENKINS_USERNAME = os.getenv("JENKINS_USERNAME")
 JENKINS_API_TOKEN = os.getenv("JENKINS_API_TOKEN")
+
 DJANGO_API_TOKEN = "6147012ef490c338eadb11977757e89285e3d359"
-print("DJANGO TOKEN =", DJANGO_API_TOKEN)
 
 
 def fetch_console_log():
@@ -23,15 +23,16 @@ def fetch_console_log():
     job_name = os.getenv("JOB_NAME")
 
     url = (
-        f"{JENKINS_URL}/job/"
-        f"{job_name}/"
-        f"{build_number}/consoleText"
+        f"{JENKINS_URL.rstrip('/')}"
+        f"/job/{job_name}/{build_number}/consoleText"
     )
 
     print("\n========== FETCH CONSOLE LOG ==========")
-    print("Job Name      :", job_name)
-    print("Build Number  :", build_number)
-    print("URL           :", url)
+    print("Username       :", JENKINS_USERNAME)
+    print("Token Length   :", len(JENKINS_API_TOKEN or ""))
+    print("Job Name       :", job_name)
+    print("Build Number   :", build_number)
+    print("URL            :", url)
     print("=======================================\n")
 
     try:
@@ -42,47 +43,67 @@ def fetch_console_log():
                 JENKINS_USERNAME,
                 JENKINS_API_TOKEN,
             ),
+            timeout=30,
         )
 
         print("Console Status :", response.status_code)
 
         if response.status_code == 200:
+
+            print("Console Log Size :", len(response.text))
+
             return response.text
 
+        print("Console Fetch Failed")
         print(response.text)
+
         return ""
 
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
 
+        print("Console Fetch Exception")
         print(e)
+
         return ""
 
 
 def create_build_payload():
 
-    build_number = int(os.getenv("BUILD_NUMBER", "0"))
-
-    job_name = os.getenv("JOB_NAME", "")
-
-    branch = os.getenv("BRANCH_NAME", "main")
-
-    status = os.getenv("BUILD_STATUS", "UNKNOWN")
-
-    duration = int(os.getenv("BUILD_DURATION", "0"))
-
     payload = {
 
-        "jenkins_job_name": job_name,
+        "jenkins_job_name": os.getenv(
+            "JOB_NAME",
+            "",
+        ),
 
-        "build_number": build_number,
+        "build_number": int(
+            os.getenv(
+                "BUILD_NUMBER",
+                "0",
+            )
+        ),
 
-        "project_name": job_name,
+        "project_name": os.getenv(
+            "JOB_NAME",
+            "",
+        ),
 
-        "branch": branch,
+        "branch": os.getenv(
+            "BRANCH_NAME",
+            "main",
+        ),
 
-        "status": status,
+        "status": os.getenv(
+            "BUILD_STATUS",
+            "UNKNOWN",
+        ),
 
-        "duration": duration,
+        "duration": int(
+            os.getenv(
+                "BUILD_DURATION",
+                "0",
+            )
+        ),
 
         "console_log": fetch_console_log(),
 
@@ -94,21 +115,31 @@ def create_build_payload():
 def send_build_data(payload):
 
     headers = {
+
         "Authorization": f"Token {DJANGO_API_TOKEN}",
+
         "Content-Type": "application/json",
+
     }
 
     print("\n========== REQUEST ==========")
-    print("API_URL :", API_URL)
+    print("API URL :", API_URL)
     print("Headers :", headers)
-    print("Payload :", payload)
+    print("Payload Keys :", payload.keys())
     print("=============================\n")
 
     try:
+
         response = requests.post(
+
             API_URL,
+
             json=payload,
+
             headers=headers,
+
+            timeout=30,
+
         )
 
         print("Response Status :", response.status_code)
@@ -116,27 +147,30 @@ def send_build_data(payload):
 
         return response
 
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
+
+        print("Request Exception")
         print(e)
+
         return None
 
 
 def main():
 
-    print("\n========== ENVIRONMENT VARIABLES ==========")
+    print("\n========== ENVIRONMENT ==========")
+
     print("BUILD_NUMBER   :", os.getenv("BUILD_NUMBER"))
     print("JOB_NAME       :", os.getenv("JOB_NAME"))
     print("BRANCH_NAME    :", os.getenv("BRANCH_NAME"))
     print("BUILD_STATUS   :", os.getenv("BUILD_STATUS"))
     print("BUILD_DURATION :", os.getenv("BUILD_DURATION"))
-    print("API_URL        :", os.getenv("API_URL"))
-    print("===========================================\n")
+    print("JENKINS_URL    :", JENKINS_URL)
+    print("USERNAME       :", JENKINS_USERNAME)
+    print("TOKEN LENGTH   :", len(JENKINS_API_TOKEN or ""))
+
+    print("=================================\n")
 
     payload = create_build_payload()
-
-    print("\n========== PAYLOAD ==========")
-    print(payload)
-    print("=============================\n")
 
     response = send_build_data(payload)
 
@@ -144,11 +178,15 @@ def main():
         return
 
     print("\n========== DJANGO RESPONSE ==========")
-    print("Status Code :", response.status_code)
+
+    print("Status :", response.status_code)
 
     try:
+
         print(response.json())
+
     except Exception:
+
         print(response.text)
 
     print("=====================================\n")

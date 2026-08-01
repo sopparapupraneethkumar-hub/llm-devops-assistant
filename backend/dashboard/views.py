@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
-
+from projects.models import Project
 from builds.models import Build
 from pipeline.models import Pipeline
 from dashboard.services.jenkins_service import trigger_build
@@ -12,6 +12,14 @@ from dashboard.services.jenkins_service import trigger_build
 def dashboard(request):
 
     builds = Build.objects.order_by("-created_at")
+
+    total_projects = Project.objects.filter(
+        owner=request.user
+    ).count()
+
+    recent_projects = Project.objects.filter(
+        owner=request.user
+    ).order_by("-created_at")[:5]
 
     context = {
         "latest_build": builds.first(),
@@ -23,6 +31,10 @@ def dashboard(request):
         "recent_pipelines": Pipeline.objects.filter(
             owner=request.user
         ).order_by("-created_at")[:5],
+
+        # Projects
+        "total_projects": total_projects,
+        "recent_projects": recent_projects,
     }
 
     return render(
@@ -30,7 +42,6 @@ def dashboard(request):
         "dashboard/dashboard.html",
         context,
     )
-
 
 @login_required
 def run_build(request):

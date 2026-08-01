@@ -11,9 +11,7 @@
             <h2>{{ project.name }}</h2>
 
             <p class="text-muted">
-
                 {{ project.description }}
-
             </p>
 
         </div>
@@ -27,90 +25,253 @@
 
     </div>
 
-    <div class="row">
-
-        <div class="col-md-3">
-
-            <div class="card shadow-sm">
-
-                <div class="card-body">
-
-                    <h6>Technology</h6>
-
-                    <h5>{{ project.technology }}</h5>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-3">
-
-            <div class="card shadow-sm">
-
-                <div class="card-body">
-
-                    <h6>Branch</h6>
-
-                    <h5>{{ project.default_branch }}</h5>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-3">
-
-            <div class="card shadow-sm">
-
-                <div class="card-body">
-
-                    <h6>Visibility</h6>
-
-                    <h5>{{ project.visibility }}</h5>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-3">
-
-            <div class="card shadow-sm">
-
-                <div class="card-body">
-
-                    <h6>Status</h6>
-
-                    <h5>{{ project.status }}</h5>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="card mt-4">
+    <div class="card shadow-sm mb-4">
 
         <div class="card-header">
 
-            Repository
+            <strong>Project Information</strong>
 
         </div>
 
         <div class="card-body">
 
-            <a href="{{ project.repository_url }}"
-               target="_blank">
+            <table class="table">
 
-                {{ project.repository_url }}
+                <tr>
 
-            </a>
+                    <th>Technology</th>
+
+                    <td>{{ project.technology }}</td>
+
+                </tr>
+
+                <tr>
+
+                    <th>Repository</th>
+
+                    <td>
+
+                        <a href="{{ project.repository_url }}"
+                           target="_blank">
+
+                            {{ project.repository_url }}
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>Default Branch</th>
+
+                    <td>{{ project.default_branch }}</td>
+
+                </tr>
+
+                <tr>
+
+                    <th>Status</th>
+
+                    <td>
+
+                        <span class="badge bg-success">
+
+                            {{ project.status }}
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+
+            <strong>Pipelines</strong>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if pipelines %}
+
+            <table class="table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Name</th>
+
+                        <th>Branch</th>
+
+                        <th>Status</th>
+
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for pipeline in pipelines %}
+
+                    <tr>
+
+                        <td>
+
+                            <a href="{% url 'pipeline_detail' pipeline.id %}">
+
+                                {{ pipeline.name }}
+
+                            </a>
+
+                        </td>
+
+                        <td>
+
+                            {{ pipeline.branch }}
+
+                        </td>
+
+                        <td>
+
+                            {% if pipeline.is_active %}
+
+                            <span class="badge bg-success">
+
+                                Active
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-danger">
+
+                                Inactive
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <a href="{% url 'run_pipeline' pipeline.id %}"
+                               class="btn btn-success btn-sm">
+
+                                ▶ Run
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <div class="alert alert-info">
+
+                No pipelines available.
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <strong>Recent Builds</strong>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if recent_builds %}
+
+            <table class="table table-hover">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Build</th>
+
+                        <th>Status</th>
+
+                        <th>Duration</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for build in recent_builds %}
+
+                    <tr>
+
+                        <td>
+
+                            <a href="{% url 'build_detail' build.id %}">
+
+                                #{{ build.build_number }}
+
+                            </a>
+
+                        </td>
+
+                        <td>
+
+                            {{ build.status }}
+
+                        </td>
+
+                        <td>
+
+                            {{ build.duration }} sec
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <div class="alert alert-info">
+
+                No builds found.
+
+            </div>
+
+            {% endif %}
 
         </div>
 

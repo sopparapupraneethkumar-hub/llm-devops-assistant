@@ -10,7 +10,11 @@
 
 <li>
 
-<b>Name:</b> {{ pipeline.name }}
+<strong>Name:</strong>
+
+<a href="{% url 'pipeline_detail' pipeline.id %}">
+    {{ pipeline.name }}
+</a>
 
 <br>
 

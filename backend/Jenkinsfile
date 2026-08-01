@@ -62,23 +62,31 @@ pipeline {
         }
 
     }
-
     post {
 
-        always {
+    always {
 
-            script {
+        script {
 
-                def durationSeconds = (currentBuild.duration / 1000) as Integer
+            def durationSeconds = (currentBuild.duration / 1000) as Integer
+
+            withCredentials([
+                usernamePassword(
+                    credentialsId: 'jenkins-api',
+                    usernameVariable: 'JENKINS_USERNAME',
+                    passwordVariable: 'JENKINS_API_TOKEN'
+                )
+            ]) {
 
                 withEnv([
 
                     "BUILD_NUMBER=${env.BUILD_NUMBER}",
                     "JOB_NAME=${env.JOB_NAME}",
-                    "BRANCH_NAME=${env.BRANCH_NAME}",
+                    "BRANCH_NAME=${env.GIT_BRANCH ?: 'main'}",
                     "BUILD_STATUS=${env.BUILD_RESULT}",
                     "BUILD_DURATION=${durationSeconds}",
                     "API_URL=http://host.docker.internal:8000/api/builds/",
+                    "JENKINS_URL=http://localhost:8080",
 
                 ]) {
 
@@ -94,13 +102,21 @@ pipeline {
                         echo "BUILD_STATUS=$BUILD_STATUS"
                         echo "BRANCH_NAME=$BRANCH_NAME"
                         echo "BUILD_DURATION=$BUILD_DURATION"
+                        echo "JENKINS_URL=$JENKINS_URL"
+                        echo "JENKINS_USERNAME=$JENKINS_USERNAME"
+                        echo "TOKEN_LENGTH=${#JENKINS_API_TOKEN}"
                         echo "=============================="
 
                         python scripts/send_build.py
 
                     '''
+
                 }
+
             }
+
         }
+
     }
+
 }
