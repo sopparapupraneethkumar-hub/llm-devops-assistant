@@ -70,23 +70,77 @@ def run_build(request):
 @login_required
 def build_status(request):
 
-    latest = Build.objects.order_by("-created_at").first()
+    builds = Build.objects.order_by("-created_at")
+
+    latest = builds.first()
 
     if latest is None:
 
         return JsonResponse({
-            "status": "NO_BUILD"
+
+            "latest_build": None,
+
+            "kpis": {
+
+                "total_builds": 0,
+
+                "successful_builds": 0,
+
+                "failed_builds": 0,
+
+                "running_builds": 0,
+
+            }
+
         })
 
     return JsonResponse({
-        "id": latest.id,
-        "status": latest.status,
-        "build_number": latest.build_number,
-        "duration": latest.duration,
-        "created_at": latest.created_at,
-        "summary": latest.ai_summary,
-    })
 
+        "latest_build": {
+
+            "id": latest.id,
+
+            "build_number": latest.build_number,
+
+            "status": latest.status,
+
+            "duration": latest.duration,
+
+            "summary": latest.ai_summary,
+
+            "created_at": latest.created_at.strftime(
+
+                "%d %b %Y %H:%M"
+
+            ),
+
+        },
+
+        "kpis": {
+
+            "total_builds": builds.count(),
+
+            "successful_builds": builds.filter(
+
+                status="SUCCESS"
+
+            ).count(),
+
+            "failed_builds": builds.filter(
+
+                status="FAILED"
+
+            ).count(),
+
+            "running_builds": builds.filter(
+
+                status="RUNNING"
+
+            ).count(),
+
+        }
+
+    })
 
 @login_required
 def recent_builds(request):
