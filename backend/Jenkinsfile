@@ -9,47 +9,69 @@ pipeline {
     stages {
 
         stage('Setup Python Environment') {
+
             steps {
+
                 sh '''
+
                     python3 -m venv .venv
+
                     . .venv/bin/activate
 
                     python -m pip install --upgrade pip
 
                     cd backend
+
                     pip install -r requirements.txt
+
                 '''
+
             }
+
         }
 
         stage('Verify Django Project') {
+
             steps {
+
                 script {
+
                     try {
 
                         sh '''
+
                             . .venv/bin/activate
 
                             cd backend
 
                             python manage.py check
+
                         '''
 
                         env.BUILD_RESULT = "SUCCESS"
 
-                    } catch(Exception e) {
+                    }
+
+                    catch(Exception e) {
 
                         env.BUILD_RESULT = "FAILED"
 
                         throw e
+
                     }
+
                 }
+
             }
+
         }
 
         stage('Verify send_build.py') {
+
             steps {
+
                 sh '''
+
                     cd backend
 
                     echo "===== send_build.py ====="
@@ -57,59 +79,109 @@ pipeline {
                     cat scripts/send_build.py
 
                     echo "========================="
+
                 '''
+
             }
+
         }
 
     }
+
     post {
 
-    always {
+        always {
 
-        script {
+            script {
 
-            def durationSeconds = (currentBuild.duration / 1000) as Integer
+                def durationSeconds = (currentBuild.duration / 1000) as Integer
 
-            withCredentials([
-                usernamePassword(
-                    credentialsId: 'jenkins-api',
-                    usernameVariable: 'JENKINS_USERNAME',
-                    passwordVariable: 'JENKINS_API_TOKEN'
-                )
-            ]) {
+                withCredentials([
 
-                withEnv([
+                    usernamePassword(
 
-                    "BUILD_NUMBER=${env.BUILD_NUMBER}",
-                    "JOB_NAME=${env.JOB_NAME}",
-                    "BRANCH_NAME=${env.GIT_BRANCH ?: 'main'}",
-                    "BUILD_STATUS=${env.BUILD_RESULT}",
-                    "BUILD_DURATION=${durationSeconds}",
-                    "API_URL=http://host.docker.internal:8000/api/builds/",
-                    "JENKINS_URL=http://localhost:8080",
+                        credentialsId: 'jenkins-api',
+
+                        usernameVariable: 'JENKINS_USERNAME',
+
+                        passwordVariable: 'JENKINS_API_TOKEN'
+
+                    )
 
                 ]) {
 
-                    sh '''
+                    withEnv([
 
-                        . .venv/bin/activate
+                        "BUILD_NUMBER=${env.BUILD_NUMBER}",
 
-                        cd backend
+                        "JOB_NAME=${env.JOB_NAME}",
 
-                        echo "=============================="
-                        echo "BUILD_NUMBER=$BUILD_NUMBER"
-                        echo "JOB_NAME=$JOB_NAME"
-                        echo "BUILD_STATUS=$BUILD_STATUS"
-                        echo "BRANCH_NAME=$BRANCH_NAME"
-                        echo "BUILD_DURATION=$BUILD_DURATION"
-                        echo "JENKINS_URL=$JENKINS_URL"
-                        echo "JENKINS_USERNAME=$JENKINS_USERNAME"
-                        echo "TOKEN_LENGTH=${#JENKINS_API_TOKEN}"
-                        echo "=============================="
+                        "BRANCH_NAME=${env.GIT_BRANCH ?: 'main'}",
 
-                        python scripts/send_build.py
+                        "BUILD_STATUS=${currentBuild.currentResult}",
 
-                    '''
+                        "BUILD_DURATION=${durationSeconds}",
+
+                        "API_URL=http://host.docker.internal:8000/api/builds/",
+
+                        "JENKINS_URL=http://host.docker.internal:8080",
+
+                    ]) {
+
+                        sh '''
+
+                            . .venv/bin/activate
+
+                            cd backend
+
+                            echo "=============================="
+
+                            echo "BUILD_NUMBER=$BUILD_NUMBER"
+
+                            echo "JOB_NAME=$JOB_NAME"
+
+                            echo "BUILD_STATUS=$BUILD_STATUS"
+
+                            echo "BRANCH_NAME=$BRANCH_NAME"
+
+                            echo "BUILD_DURATION=$BUILD_DURATION"
+
+                            echo "JENKINS_URL=$JENKINS_URL"
+
+                            echo "JENKINS_USERNAME=$JENKINS_USERNAME"
+
+                            echo "TOKEN_LENGTH=${#JENKINS_API_TOKEN}"
+
+                            echo "=============================="
+
+                            python - <<EOF
+import os
+import requests
+
+url = f"{os.getenv('JENKINS_URL')}/job/{os.getenv('JOB_NAME')}/{os.getenv('BUILD_NUMBER')}/consoleText"
+
+print("\\n========== TESTING JENKINS API ==========")
+print("URL:", url)
+
+response = requests.get(
+    url,
+    auth=(
+        os.getenv("JENKINS_USERNAME"),
+        os.getenv("JENKINS_API_TOKEN"),
+    ),
+    timeout=20
+)
+
+print("STATUS:", response.status_code)
+print(response.text[:300])
+print("========================================\\n")
+EOF
+
+                            python scripts/send_build.py
+
+                        '''
+
+                    }
 
                 }
 
