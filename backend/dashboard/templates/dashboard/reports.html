@@ -1,0 +1,346 @@
+{% extends "layouts/dashboard_layout.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card border-0 shadow-lg mb-4"
+         style="background:linear-gradient(135deg,#0f766e,#115e59);border-radius:18px;">
+
+        <div class="card-body p-5">
+
+            <div class="row align-items-center">
+
+                <div class="col-lg-8">
+
+                    <h2 class="text-white fw-bold">
+
+                        📊 Reports Dashboard
+
+                    </h2>
+
+                    <p class="text-white mb-0">
+
+                        Monitor build statistics, trends and CI/CD health.
+
+                    </p>
+
+                </div>
+
+                <div class="col-lg-4 text-end">
+
+                    <i class="bi bi-bar-chart-line-fill text-white"
+                       style="font-size:80px;opacity:.25;"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-3">
+
+            <div class="card shadow border-0 rounded-4">
+
+                <div class="card-body text-center">
+
+                    <h6>Total Builds</h6>
+
+                    <h2 class="fw-bold">
+
+                        {{ total_builds }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow border-0 rounded-4">
+
+                <div class="card-body text-center">
+
+                    <h6>Successful</h6>
+
+                    <h2 class="fw-bold text-success">
+
+                        {{ successful_builds }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow border-0 rounded-4">
+
+                <div class="card-body text-center">
+
+                    <h6>Failed</h6>
+
+                    <h2 class="fw-bold text-danger">
+
+                        {{ failed_builds }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow border-0 rounded-4">
+
+                <div class="card-body text-center">
+
+                    <h6>Running</h6>
+
+                    <h2 class="fw-bold text-warning">
+
+                        {{ running_builds }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="row">
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-lg rounded-4 mb-4">
+
+                <div class="card-header">
+
+                    Build Status Distribution
+
+                </div>
+
+                <div class="card-body">
+
+                    <canvas id="pieChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-lg rounded-4 mb-4">
+
+                <div class="card-header">
+
+                    Build Statistics
+
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table">
+
+                        <tr>
+
+                            <th>Success Rate</th>
+
+                            <td>
+
+                                {{ success_rate }} %
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <th>Average Duration</th>
+
+                            <td>
+
+                                {{ average_duration }} sec
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <th>Total Builds</th>
+
+                            <td>
+
+                                {{ total_builds }}
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <th>Running Builds</th>
+
+                            <td>
+
+                                {{ running_builds }}
+
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="card border-0 shadow-lg rounded-4">
+
+        <div class="card-header">
+
+            Weekly Build Trend
+
+        </div>
+
+        <div class="card-body">
+
+            <canvas id="barChart"></canvas>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+new Chart(
+
+    document.getElementById("pieChart"),
+
+    {
+
+        type:"pie",
+
+        data:{
+
+            labels:[
+
+                "Success",
+
+                "Failed",
+
+                "Running"
+
+            ],
+
+            datasets:[{
+
+                data:[
+
+                    {{ successful_builds }},
+
+                    {{ failed_builds }},
+
+                    {{ running_builds }}
+
+                ]
+
+            }]
+
+        }
+
+    }
+
+);
+
+
+
+new Chart(
+
+    document.getElementById("barChart"),
+
+    {
+
+        type:"bar",
+
+        data:{
+
+            labels:[
+
+                "Success",
+
+                "Failed",
+
+                "Running"
+
+            ],
+
+            datasets:[{
+
+                label:"Builds",
+
+                data:[
+
+                    {{ successful_builds }},
+
+                    {{ failed_builds }},
+
+                    {{ running_builds }}
+
+                ]
+
+            }]
+
+        }
+
+    }
+
+);
+
+</script>
+
+{% endblock %}

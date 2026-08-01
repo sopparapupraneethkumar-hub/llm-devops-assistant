@@ -6,7 +6,37 @@ from projects.models import Project
 from builds.models import Build
 from pipeline.models import Pipeline
 from dashboard.services.jenkins_service import trigger_build
+from django.db.models import Avg
 
+def home(request):
+
+    if request.user.is_authenticated:
+
+        return redirect("dashboard")
+
+    return redirect("login")
+
+
+@login_required
+def ai_analysis(request):
+
+    latest_build = Build.objects.order_by(
+        "-created_at"
+    ).first()
+
+    if latest_build:
+
+        return redirect(
+            "build_detail",
+            pk=latest_build.id,
+        )
+
+    messages.info(
+        request,
+        "No builds available yet."
+    )
+
+    return redirect("dashboard")
 
 @login_required
 def dashboard(request):
@@ -162,3 +192,67 @@ def recent_builds(request):
         })
 
     return JsonResponse(data, safe=False)
+
+@login_required
+def reports(request):
+
+    builds = Build.objects.all()
+
+    total_builds = builds.count()
+
+    successful_builds = builds.filter(
+        status="SUCCESS"
+    ).count()
+
+    failed_builds = builds.filter(
+        status="FAILED"
+    ).count()
+
+    running_builds = builds.filter(
+        status="RUNNING"
+    ).count()
+
+    success_rate = 0
+
+    if total_builds:
+
+        success_rate = round(
+            (successful_builds / total_builds) * 100,
+            1,
+        )
+
+    average_duration = (
+        builds.aggregate(
+            Avg("duration")
+        )["duration__avg"]
+        or 0
+    )
+
+    context = {
+
+        "total_builds": total_builds,
+
+        "successful_builds": successful_builds,
+
+        "failed_builds": failed_builds,
+
+        "running_builds": running_builds,
+
+        "success_rate": success_rate,
+
+        "average_duration": round(
+            average_duration,
+            2,
+        ),
+
+    }
+
+    return render(
+
+        request,
+
+        "dashboard/reports.html",
+
+        context,
+
+    )
