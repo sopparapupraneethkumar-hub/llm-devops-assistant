@@ -13,14 +13,68 @@ Authentication | LLM DevOps Assistant
 
 <div class="auth-page">
 
-    <div class="container">
+    <div class="container-fluid">
 
-        <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="row min-vh-100">
 
-            <div class="col-lg-5 col-md-7 col-sm-10">
+            <div class="col-lg-6 d-none d-lg-flex auth-left">
 
-                {% block auth_content %}
-                {% endblock %}
+                <div class="hero-content">
+
+                    <i class="bi bi-cpu-fill display-1 mb-4"></i>
+
+                    <h1>
+
+                        LLM DevOps Assistant
+
+                    </h1>
+
+                    <p>
+
+                        AI Powered CI/CD Monitoring Platform
+
+                    </p>
+
+                    <div class="feature-list">
+
+                        <div>
+
+                            ✅ Jenkins Integration
+
+                        </div>
+
+                        <div>
+
+                            ✅ Gemini AI Analysis
+
+                        </div>
+
+                        <div>
+
+                            ✅ Live Dashboard
+
+                        </div>
+
+                        <div>
+
+                            ✅ Reports & Analytics
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-6 d-flex align-items-center justify-content-center">
+
+                <div class="auth-container">
+
+                    {% block auth_content %}
+                    {% endblock %}
+
+                </div>
 
             </div>
 

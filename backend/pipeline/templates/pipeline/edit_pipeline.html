@@ -2,54 +2,80 @@
 
 {% block content %}
 
-<h2>Edit Pipeline</h2>
+<div class="container-fluid">
 
-<form method="POST">
+    <div class="row justify-content-center">
 
-{% csrf_token %}
+        <div class="col-xl-8">
 
-<label>Name</label><br>
-<input
-type="text"
-name="name"
-value="{{ pipeline.name }}"
-><br><br>
+            <div class="card border-0 shadow-lg rounded-4">
 
-<label>Repository URL</label><br>
-<input
-type="url"
-name="repository_url"
-value="{{ pipeline.repository_url }}"
-><br><br>
+                <div class="card-body p-5">
 
-<label>Branch</label><br>
-<input
-type="text"
-name="branch"
-value="{{ pipeline.branch }}"
-><br><br>
+                    <div class="text-center mb-5">
 
-<label>Jenkins Job Name</label><br>
-<input
-type="text"
-name="jenkins_job_name"
-value="{{ pipeline.jenkins_job_name }}"
-><br><br>
+                        <div class="icon-circle bg-warning mx-auto mb-3">
 
-<label>Description</label><br>
+                            <i class="bi bi-pencil-fill text-white fs-2"></i>
 
-<textarea
-name="description"
->{{ pipeline.description }}</textarea>
+                        </div>
 
-<br><br>
+                        <h2 class="fw-bold">
 
-<button type="submit">
+                            Edit Pipeline
 
-Update Pipeline
+                        </h2>
 
-</button>
+                        <p class="text-muted">
 
-</form>
+                            Update your Jenkins pipeline configuration.
+
+                        </p>
+
+                    </div>
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        {{ form.as_p }}
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-end gap-3">
+
+                            <a href="{% url 'pipeline_list' %}"
+
+                               class="btn btn-outline-secondary btn-lg">
+
+                                Cancel
+
+                            </a>
+
+                            <button
+
+                                type="submit"
+
+                                class="btn btn-warning btn-lg">
+
+                                <i class="bi bi-save-fill"></i>
+
+                                Save Changes
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 {% endblock %}

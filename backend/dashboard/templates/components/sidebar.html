@@ -8,6 +8,7 @@
         </h4>
 
     </div>
+    
 
     <ul class="sidebar-menu">
 
@@ -19,35 +20,41 @@
         </li>
 
         <li>
-            <a href="{% url 'pipeline_list' %}">
+            <a href="{% url 'pipeline_list' %}"
+            class="{% if request.resolver_match.url_name == 'pipeline_list' %}active{% endif %}">
                 <i class="bi bi-diagram-3-fill"></i>
                 <span>Pipelines</span>
             </a>
         </li>
 
         <li>
-            <a href="{% url 'create_pipeline' %}">
+            <a href="{% url 'create_pipeline' %}"
+   `        class="{% if request.resolver_match.url_name == 'create_pipeline' %}active{% endif %}">
                 <i class="bi bi-plus-circle-fill"></i>
                 <span>Create Pipeline</span>
             </a>
         </li>
 
         <li>
-            <a href="{% url 'project_list' %}">
+            <a href="{% url 'project_list' %}"
+            class="{% if request.resolver_match.url_name == 'project_list' %}active{% endif %}">
+            <i class="bi bi-folder-fill"></i>
                 <span>Projects</span>
             </a>
         </li>
-
         <li>
-            <a href="#">
-                <i class="bi bi-bar-chart-fill"></i>
+            <a href="{% url 'reports' %}"
+            class="{% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+            <i class="bi bi-bar-chart-fill"></i>
                 <span>Reports</span>
             </a>
         </li>
 
+
         <li>
-            <a href="#">
-                <i class="bi bi-robot"></i>
+            <a href="{% url 'ai_analysis' %}"
+            class="{% if request.resolver_match.url_name == 'ai_analysis' %}active{% endif %}">
+            <i class="bi bi-robot"></i>
                 <span>AI Analysis</span>
             </a>
         </li>
@@ -55,6 +62,7 @@
     </ul>
 
     <div class="sidebar-footer">
+        
 
         <a href="{% url 'logout' %}">
             <i class="bi bi-box-arrow-right"></i>

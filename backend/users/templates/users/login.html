@@ -20,7 +20,21 @@
 
         {% csrf_token %}
 
-        {{ form.as_p }}
+        <div class="mb-3">
+
+            {{ form.username.label_tag }}
+
+            {{ form.username }}
+
+        </div>
+
+        <div class="mb-3">
+
+            {{ form.password.label_tag }}
+
+            {{ form.password }}
+
+        </div>
 
         <button class="btn btn-primary auth-btn mt-3">
 

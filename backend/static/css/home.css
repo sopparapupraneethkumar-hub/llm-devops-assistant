@@ -1,0 +1,33 @@
+.hero{
+
+    padding:120px 0;
+
+    text-align:center;
+
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+
+    color:white;
+
+}
+
+.hero h1{
+
+    font-size:56px;
+
+    font-weight:800;
+
+}
+
+.hero p{
+
+    font-size:22px;
+
+    margin-top:20px;
+
+}
+
+.card{
+
+    border-radius:18px;
+
+}

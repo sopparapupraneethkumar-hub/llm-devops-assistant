@@ -1,19 +1,53 @@
 from django.contrib import admin
 from django.urls import path, include
+from dashboard.views import home
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
 
-    path("api/", include("api.urls")),
+    path(
+        "",
+        home,
+        name="home",
+    ),
 
-    path("api/builds/", include("builds.urls")),
+    path(
+        "admin/",
+        admin.site.urls,
+    ),
 
-    path("", include("users.urls")),
-    path("", include("pipeline.urls")),
+    path(
+        "api/",
+        include("api.urls"),
+    ),
 
-    path("dashboard/", include("dashboard.urls")),
+    path(
+        "api/builds/",
+        include("builds.urls"),
+    ),
 
-    path("projects/", include("projects.urls")),
+    path(
+        "",
+        include("users.urls"),
+    ),
 
-    path("builds/", include("builds.urls")),
+    path(
+        "",
+        include("pipeline.urls"),
+    ),
+
+    path(
+        "dashboard/",
+        include("dashboard.urls"),
+    ),
+
+    path(
+        "projects/",
+        include("projects.urls"),
+    ),
+
+    path(
+        "builds/",
+        include("builds.urls"),
+    ),
+
 ]

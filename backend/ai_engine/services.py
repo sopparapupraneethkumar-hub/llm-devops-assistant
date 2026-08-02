@@ -46,46 +46,28 @@ Console Log:
     try:
 
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.0-flash",
             contents=prompt,
         )
 
         if response and getattr(response, "text", None):
-
             return response.text
 
         return "Gemini returned an empty response."
 
     except Exception as e:
 
-        error = str(e)
-
-        if "429" in error or "RESOURCE_EXHAUSTED" in error:
-
-            return (
-                "Gemini API quota exceeded. "
-                "Please try again later."
-            )
-
-        if "404" in error or "NOT_FOUND" in error:
-
-            return (
-                "Gemini model not found."
-            )
-
-        if "API key" in error.lower():
-
-            return (
-                "Invalid Gemini API Key."
-            )
-
-        return f"AI Analysis Error: {error}"
+        return (
+            "========== GEMINI ERROR ==========\n\n"
+            f"Exception Type : {type(e).__name__}\n\n"
+            f"Message :\n{str(e)}\n\n"
+            "==============================="
+        )
 
 
 def generate_ai_summary(build):
 
     if not build.console_log:
-
         return
 
     summary = generate_build_summary(

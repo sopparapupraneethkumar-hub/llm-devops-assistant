@@ -3,43 +3,32 @@
 
 {% block content %}
 
-<div class="container-fluid">
+<div class="container-fluid px-4 py-4">
 
     <!-- Welcome Banner -->
+     <div class="welcome-banner p-5 mb-4 rounded-4 shadow-lg">
 
-    <div class="card border-0 shadow-lg mb-4"
-         style="background:linear-gradient(135deg,#2563eb,#1e40af);border-radius:18px;">
+        <div class="row align-items-center">
 
-        <div class="card-body p-5">
+            <div class="col-lg-8">
 
-            <div class="row align-items-center">
+                <h1 class="fw-bold text-white mb-3">
 
-                <div class="col-lg-8">
+                    Welcome back, {{ request.user.username }} 👋
 
-                    <h2 class="text-white fw-bold mb-2">
+                </h1>
 
-                        Welcome back,
-                        {{ request.user.username }} 👋
+                <p class="text-white fs-5 opacity-75 mb-0">
 
-                    </h2>
+                    Monitor your CI/CD pipelines, AI analysis and build reports.
 
-                    <p class="text-white mb-0 fs-5">
+                </p>
 
-                        Monitor your CI/CD pipelines,
-                        Jenkins builds,
-                        AI-powered analysis,
-                        and project health from one dashboard.
+            </div>
 
-                    </p>
+            <div class="col-lg-4 text-end">
 
-                </div>
-
-                <div class="col-lg-4 text-end">
-
-                    <i class="bi bi-cpu-fill text-white"
-                       style="font-size:90px;opacity:.25;"></i>
-
-                </div>
+                <i class="bi bi-cpu-fill display-1 text-white opacity-25"></i>
 
             </div>
 
@@ -47,15 +36,16 @@
 
     </div>
 
+
     <!-- KPI Cards -->
 
-    <div class="row g-4 mb-4">
+    <div class="row g-4 mb-5">
 
         <div class="col-xl-3 col-md-6">
 
-            <div class="card border-0 shadow dashboard-stat">
+            <div class="card border-0 shadow-lg rounded-4 dashboard-stat h-100">
 
-                <div class="card-body">
+                <div class="card-body p-4">
 
                     <div class="d-flex justify-content-between">
 
@@ -139,8 +129,6 @@
                                 Failed
 
                             </small>
-
-                            </h2>
                             <h2 class="fw-bold text-danger mt-2" id="failed-builds">
 
                                 {{ failed_builds }}
@@ -203,15 +191,13 @@
 
     </div>
 
-    <!-- Main Content -->
 
-    <div class="row">
+    <div class="row align-items-start">
 
-        <!-- LEFT -->
-
+    <!-- LEFT -->
         <div class="col-lg-8">
-                        <!-- Latest Build -->
 
+        <!-- Latest Build -->
             <div class="card border-0 shadow-lg mb-4 rounded-4">
 
                 <div class="card-header bg-white border-0 py-3">
@@ -224,28 +210,22 @@
                 </div>
 
                 <div class="card-body">
-
+                
                     {% if latest_build %}
-                    
 
                     <div class="row text-center">
 
                         <div class="col-md-3">
 
                             <small class="text-muted d-block">
-
                                 Build
-
                             </small>
 
                             <h2 class="fw-bold" id="latest-build">
-
                                 #{{ latest_build.build_number }}
-
                             </h2>
 
                         </div>
-
                         <div class="col-md-3">
 
                             <small class="text-muted d-block">
@@ -295,10 +275,8 @@
                                 AI Analysis
 
                             </small>
-
-                            <a href="{% url 'build_detail' latest_build.id %}"
-
-                               class="btn btn-outline-primary btn-sm mt-2">
+                            <a href="{% url 'build_detail' pk=latest_build.id %}"
+                            class="btn btn-outline-primary">
 
                                 View Analysis
 
@@ -402,12 +380,10 @@
                                 </td>
 
                                 <td>
+                                    <a href="{% url 'build_detail' pk=build.id %}"
+                                        class="btn btn-primary btn-sm">
 
-                                    <a href="{% url 'build_detail' build.id %}"
-
-                                       class="btn btn-sm btn-outline-primary">
-
-                                        Open
+                                            Open
 
                                     </a>
 
@@ -492,25 +468,12 @@
                             </button>
 
                         </form>
-
-                        <a href="#"
-
-                           class="btn btn-warning btn-lg">
-
-                            <i class="bi bi-robot"></i>
-
-                            AI Analysis
-
+                        <a href="{% url 'ai_analysis' %}" class="btn btn-warning btn-lg">
+                             AI Analysis
                         </a>
 
-                        <a href="#"
-
-                           class="btn btn-dark btn-lg">
-
-                            <i class="bi bi-bar-chart-fill"></i>
-
-                            Reports
-
+                        <a href="{% url 'reports' %}" class="btn btn-dark btn-lg">
+                                Reports
                         </a>
 
                     </div>
@@ -590,41 +553,64 @@
                 </div>
 
             </div>
-
-
-
-            <!-- AI Summary -->
-
+            
+            
             <div class="card border-0 shadow-lg rounded-4">
 
                 <div class="card-header bg-white border-0">
-
                     <h4 class="fw-bold">
-
-                        AI Summary
-
+                        <i class="bi bi-stars text-primary me-2"></i>AI Summary
                     </h4>
-
                 </div>
 
                 <div class="card-body">
 
-                    {% if latest_build %}
+                    <div id="latest-ai-summary" class="ai-summary">
 
-                    <div
-                    id="latest-ai-summary" 
-                    style="max-height:220px;overflow:auto;">
-                    {% if latest_build %}
-                    {{ latest_build.ai_summary|linebreaks }}
-                    {% else %}
-                    No AI Summary Available
-                    {% endif %}
-                    </div>
-                </div>
+                        {% if latest_build and latest_build.ai_summary %}
 
-            </div>
+                            {% if "429" in latest_build.ai_summary or "RESOURCE_EXHAUSTED" in latest_build.ai_summary or "GEMINI ERROR" in latest_build.ai_summary or "Exception Type" in latest_build.ai_summary or "ClientError" in latest_build.ai_summary or "quota" in latest_build.ai_summary|lower %}
 
-        </div>
+                                <div class="text-center py-2 px-1">
+                                    <i class="bi bi-hourglass-split fs-2 text-warning d-block mb-2"></i>
+                                    <h6 class="fw-bold mb-1">AI Analysis Temporarily Unavailable</h6>
+                                    <p class="text-muted small mb-2">
+                                        The Gemini API quota has been exceeded. Build results are unaffected — only this summary is delayed.
+                                    </p>
+                                    <a href="https://ai.google.dev/gemini-api/docs/rate-limits" target="_blank" rel="noopener" class="small">
+                                        View quota &amp; billing details
+                                    </a>
+                                </div>
+
+                            {% else %}
+
+                                <p class="mb-0">{{ latest_build.ai_summary|linebreaksbr }}</p>
+
+                            {% endif %}
+
+                        {% elif latest_build %}
+
+                            <div class="text-center py-2 px-1 text-muted">
+                                <i class="bi bi-robot fs-2 d-block mb-2"></i>
+                                <p class="small mb-0">AI Summary not available yet.</p>
+                            </div>
+
+                        {% else %}
+
+                            <div class="text-center py-2 px-1 text-muted">
+                                <i class="bi bi-inboxes fs-2 d-block mb-2"></i>
+                                <p class="small mb-0">No builds available.</p>
+                            </div>
+
+                        {% endif %}
+
+                    </div> <!-- latest-ai-summary -->
+
+                </div> <!-- card-body -->
+
+            </div> <!-- card -->
+
+
                     <!-- Recent Pipelines -->
 
             <div class="card border-0 shadow-lg rounded-4 mt-4">
@@ -890,50 +876,23 @@
 
 
     <!-- Footer -->
+     <footer class="mt-5">
 
-    <footer class="mt-5">
+        <div class="card">
 
-        <div class="card border-0 shadow rounded-4">
+            <div class="card-body text-center">
 
-            <div class="card-body">
+                <p class="mb-1">
 
-                <div class="row">
+                    © 2026 LLM DevOps Assistant
 
-                    <div class="col-lg-6">
+                </p>
 
-                        <h5 class="fw-bold">
+            <small class="text-muted">
 
-                            LLM DevOps Assistant
+                Built using Django • Jenkins • Gemini AI
 
-                        </h5>
-
-                        <p class="text-muted mb-0">
-
-                            AI Powered CI/CD Monitoring Platform
-
-                        </p>
-
-                    </div>
-
-                    <div class="col-lg-6 text-end">
-
-                        <small class="text-muted">
-
-                            Version 1.0
-
-                        </small>
-
-                        <br>
-
-                        <small class="text-muted">
-
-                            Django • Jenkins • Gemini • Bootstrap
-
-                        </small>
-
-                    </div>
-
-                </div>
+             </small>
 
             </div>
 
@@ -941,7 +900,9 @@
 
     </footer>
 
+
 </div>
+
 
 <script src="{% static 'js/dashboard.js' %}"></script>
 

@@ -3,12 +3,12 @@ import requests
 
 API_URL = os.getenv(
     "API_URL",
-    "http://127.0.0.1:8000/api/builds/"
+    "http://127.0.0.1:8000/api/builds/",
 )
 
 JENKINS_URL = os.getenv(
     "JENKINS_URL",
-    "http://localhost:8080"
+    "http://host.docker.internal:8080",
 )
 
 JENKINS_USERNAME = os.getenv("JENKINS_USERNAME")
@@ -28,11 +28,11 @@ def fetch_console_log():
     )
 
     print("\n========== FETCH CONSOLE LOG ==========")
-    print("Username       :", JENKINS_USERNAME)
-    print("Token Length   :", len(JENKINS_API_TOKEN or ""))
-    print("Job Name       :", job_name)
-    print("Build Number   :", build_number)
-    print("URL            :", url)
+    print("Username      :", JENKINS_USERNAME)
+    print("Token Length  :", len(JENKINS_API_TOKEN or ""))
+    print("Job Name      :", job_name)
+    print("Build Number  :", build_number)
+    print("URL           :", url)
     print("=======================================\n")
 
     try:
@@ -43,73 +43,59 @@ def fetch_console_log():
                 JENKINS_USERNAME,
                 JENKINS_API_TOKEN,
             ),
-            timeout=30,
+            timeout=20,
         )
 
         print("Console Status :", response.status_code)
 
         if response.status_code == 200:
-
-            print("Console Log Size :", len(response.text))
-
+            print("Console Log Length :", len(response.text))
             return response.text
 
-        print("Console Fetch Failed")
         print(response.text)
-
         return ""
 
     except Exception as e:
 
-        print("Console Fetch Exception")
-        print(e)
-
+        print("ERROR :", e)
         return ""
 
 
 def create_build_payload():
 
-    payload = {
+    return {
 
-        "jenkins_job_name": os.getenv(
-            "JOB_NAME",
-            "",
-        ),
+        "jenkins_job_name": os.getenv("JOB_NAME", ""),
 
         "build_number": int(
-            os.getenv(
-                "BUILD_NUMBER",
-                "0",
-            )
+            os.getenv("BUILD_NUMBER", "0")
         ),
 
         "project_name": os.getenv(
             "JOB_NAME",
-            "",
+            ""
         ),
 
         "branch": os.getenv(
             "BRANCH_NAME",
-            "main",
+            "main"
         ),
 
         "status": os.getenv(
             "BUILD_STATUS",
-            "UNKNOWN",
+            "UNKNOWN"
         ),
 
         "duration": int(
             os.getenv(
                 "BUILD_DURATION",
-                "0",
+                "0"
             )
         ),
 
         "console_log": fetch_console_log(),
 
     }
-
-    return payload
 
 
 def send_build_data(payload):
@@ -124,32 +110,26 @@ def send_build_data(payload):
 
     print("\n========== REQUEST ==========")
     print("API URL :", API_URL)
-    print("Headers :", headers)
     print("Payload Keys :", payload.keys())
+    print("Console Length :", len(payload["console_log"]))
     print("=============================\n")
 
     try:
 
         response = requests.post(
-
             API_URL,
-
             json=payload,
-
             headers=headers,
-
-            timeout=30,
-
+            timeout=20,
         )
 
-        print("Response Status :", response.status_code)
-        print("Response Text :", response.text)
+        print("Response :", response.status_code)
+        print(response.text)
 
         return response
 
     except Exception as e:
 
-        print("Request Exception")
         print(e)
 
         return None
@@ -179,17 +159,14 @@ def main():
 
     print("\n========== DJANGO RESPONSE ==========")
 
-    print("Status :", response.status_code)
+    print(response.status_code)
 
     try:
-
         print(response.json())
-
     except Exception:
-
         print(response.text)
 
-    print("=====================================\n")
+    print("=====================================")
 
 
 if __name__ == "__main__":

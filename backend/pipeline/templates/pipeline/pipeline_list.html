@@ -1,50 +1,439 @@
 {% extends "layouts/dashboard_layout.html" %}
+{% load static %}
 
 {% block content %}
 
-<h2>Pipeline List</h2>
+<div class="container-fluid">
 
-<ul>
+    <!-- Header -->
 
-{% for pipeline in pipelines %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-<li>
+        <div>
 
-<strong>Name:</strong>
+            <h2 class="fw-bold">
 
-<a href="{% url 'pipeline_detail' pipeline.id %}">
-    {{ pipeline.name }}
-</a>
+                CI/CD Pipelines
 
-<br>
+            </h2>
 
-<b>Branch:</b> {{ pipeline.branch }}
+            <p class="text-muted mb-0">
 
-<br>
+                Manage and monitor all Jenkins pipelines.
 
-<b>Repository:</b> {{ pipeline.repository_url }}
+            </p>
 
-</li>
+        </div>
 
-<br>
-<a href="{% url 'edit_pipeline' pipeline.id %}"
-   class="btn btn-warning btn-sm">
-    Edit
-</a>
+        <a href="{% url 'create_pipeline' %}"
 
-<a href="{% url 'run_pipeline' pipeline.id %}"
-   class="btn btn-success btn-sm">
-    ▶ Run Build
-</a>
+           class="btn btn-primary">
 
-<a href="{% url 'delete_pipeline' pipeline.id %}"
-   class="btn btn-danger btn-sm">
-    Delete
-</a>
-{% endfor %}
+            <i class="bi bi-plus-circle-fill"></i>
 
-</ul>
+            Create Pipeline
 
+        </a>
+
+    </div>
+
+
+
+    <!-- Search -->
+
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-lg-8">
+
+                    <input
+
+                        id="pipelineSearch"
+
+                        class="form-control"
+
+                        placeholder="Search pipeline..."
+
+                    >
+
+                </div>
+
+                <div class="col-lg-4">
+
+                    <select
+
+                        id="statusFilter"
+
+                        class="form-select">
+
+                        <option value="all">
+
+                            All Pipelines
+
+                        </option>
+
+                        <option value="active">
+
+                            Active
+
+                        </option>
+
+                        <option value="inactive">
+
+                            Inactive
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Statistics -->
+
+    <div class="row mb-4">
+
+        <div class="col-lg-4">
+
+            <div class="card dashboard-stat">
+
+                <div class="card-body">
+
+                    <small>
+
+                        Total Pipelines
+
+                    </small>
+
+                    <h2>
+
+                        {{ pipelines|length }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card dashboard-stat">
+
+                <div class="card-body">
+
+                    <small>
+
+                        Active
+
+                    </small>
+
+                    <h2>
+
+                        {{ pipelines|length }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card dashboard-stat">
+
+                <div class="card-body">
+
+                    <small>
+
+                        Jenkins Connected
+
+                    </small>
+
+                    <h2>
+
+                        {{ pipelines|length }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Pipeline Cards -->
+
+    <div class="row">
+
+    {% for pipeline in pipelines %}
+
+        <div class="col-lg-6 mb-4 pipeline-card">
+
+            <div class="card border-0 shadow-lg rounded-4 h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <h4 class="fw-bold">
+
+                                {{ pipeline.name }}
+
+                            </h4>
+
+                            <small class="text-muted">
+
+                                {{ pipeline.branch }}
+
+                            </small>
+
+                        </div>
+
+                        <span class="badge bg-success">
+
+                            Active
+
+                        </span>
+
+                    </div>
+
+                    <hr>
+
+                    <p class="mb-2">
+
+                        <strong>Repository</strong>
+
+                    </p>
+
+                    <a href="{{ pipeline.repository_url }}"
+
+                       target="_blank">
+
+                        {{ pipeline.repository_url }}
+
+                    </a>
+
+                    <br><br>
+
+                    <p>
+
+                        <strong>Jenkins Job</strong>
+
+                    </p>
+
+                    <span class="badge bg-primary">
+
+                        {{ pipeline.jenkins_job_name }}
+
+                    </span>
+
+                    <hr>
+
+                    <div class="d-flex gap-2 flex-wrap">
+                                                <a href="{% url 'run_pipeline' pipeline.id %}"
+                           class="btn btn-success">
+
+                            <i class="bi bi-play-fill"></i>
+
+                            Run Build
+
+                        </a>
+
+                        <a href="{% url 'pipeline_detail' pipeline.id %}"
+                           class="btn btn-primary">
+
+                            <i class="bi bi-eye-fill"></i>
+
+                            Details
+
+                        </a>
+
+                        <a href="{% url 'edit_pipeline' pipeline.id %}"
+                           class="btn btn-warning">
+
+                            <i class="bi bi-pencil-fill"></i>
+
+                            Edit
+
+                        </a>
+
+                        <a href="{% url 'delete_pipeline' pipeline.id %}"
+                           class="btn btn-danger">
+
+                            <i class="bi bi-trash-fill"></i>
+
+                            Delete
+
+                        </a>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="row text-center mt-3">
+
+                        <div class="col-4">
+
+                            <small class="text-muted">
+
+                                Branch
+
+                            </small>
+
+                            <br>
+
+                            <strong>
+
+                                {{ pipeline.branch }}
+
+                            </strong>
+
+                        </div>
+
+                        <div class="col-4">
+
+                            <small class="text-muted">
+
+                                Project
+
+                            </small>
+
+                            <br>
+
+                            <strong>
+
+                                {{ pipeline.project.name }}
+
+                            </strong>
+
+                        </div>
+
+                        <div class="col-4">
+
+                            <small class="text-muted">
+
+                                Status
+
+                            </small>
+
+                            <br>
+
+                            {% if pipeline.is_active %}
+
+                            <span class="badge bg-success">
+
+                                Active
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-danger">
+
+                                Inactive
+
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    {% empty %}
+
+    <div class="col-12">
+
+        <div class="card shadow-lg border-0 rounded-4">
+
+            <div class="card-body text-center py-5">
+
+                <i class="bi bi-diagram-3"
+                   style="font-size:70px;color:#2563eb;"></i>
+
+                <h3 class="mt-4">
+
+                    No Pipelines Found
+
+                </h3>
+
+                <p class="text-muted">
+
+                    Create your first Jenkins pipeline.
+
+                </p>
+
+                <a href="{% url 'create_pipeline' %}"
+                   class="btn btn-primary btn-lg">
+
+                    Create Pipeline
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+    </div>
+
+</div>
+
+<script>
+
+const search=document.getElementById("pipelineSearch");
+
+search.addEventListener("keyup",function(){
+
+const value=this.value.toLowerCase();
+
+document.querySelectorAll(".pipeline-card").forEach(card=>{
+
+card.style.display=
+
+card.innerText.toLowerCase().includes(value)
+
+?
+
+"block"
+
+:
+
+"none";
+
+});
+
+});
+
+</script>
 
 {% endblock %}
-

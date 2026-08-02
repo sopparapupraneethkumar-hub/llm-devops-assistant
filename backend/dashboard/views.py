@@ -14,8 +14,13 @@ def home(request):
 
         return redirect("dashboard")
 
-    return redirect("login")
+    return render(
 
+        request,
+
+        "home.html"
+
+    )
 
 @login_required
 def ai_analysis(request):

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+LLM DevOps Assistant
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+
+    <div class="container">
+
+        <h1>LLM DevOps Assistant</h1>
+
+        <p>
+            AI Powered CI/CD Monitoring using Jenkins & Gemini AI
+        </p>
+
+        <div class="mt-4">
+
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+
+                Login
+
+            </a>
+
+            <a href="{% url 'register' %}" class="btn btn-outline-dark btn-lg ms-2">
+
+                Get Started
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="container py-5">
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body text-center">
+
+                    <i class="bi bi-cpu display-4 text-primary"></i>
+
+                    <h4 class="mt-3">
+
+                        Jenkins Integration
+
+                    </h4>
+
+                    <p>
+
+                        Trigger pipelines and monitor builds.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body text-center">
+
+                    <i class="bi bi-robot display-4 text-success"></i>
+
+                    <h4 class="mt-3">
+
+                        AI Analysis
+
+                    </h4>
+
+                    <p>
+
+                        Analyze build failures with Gemini AI.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body text-center">
+
+                    <i class="bi bi-bar-chart display-4 text-danger"></i>
+
+                    <h4 class="mt-3">
+
+                        Reports
+
+                    </h4>
+
+                    <p>
+
+                        View KPIs, charts and build trends.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

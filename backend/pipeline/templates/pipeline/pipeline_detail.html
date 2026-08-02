@@ -1,248 +1,801 @@
 {% extends "layouts/dashboard_layout.html" %}
+{% load static %}
 
 {% block content %}
 
 <div class="container-fluid">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- Page Header -->
 
-        <div>
-
-            <h2>{{ pipeline.name }}</h2>
-
-            <p class="text-muted">
-
-                {{ pipeline.description }}
-
-            </p>
-
-        </div>
-
-        <a href="{% url 'run_pipeline' pipeline.id %}"
-           class="btn btn-success">
-
-            ▶ Run Build
-
-        </a>
-
-    </div>
-
-    <!-- Statistics -->
-
-    <div class="row mb-4">
-
-        <div class="col-lg-3 col-md-6 mb-3">
-
-            <div class="card shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h6>Total Builds</h6>
-
-                    <h2>{{ total_builds }}</h2>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-3">
-
-            <div class="card shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h6>Success Rate</h6>
-
-                    <h2>{{ success_rate }}%</h2>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-3">
-
-            <div class="card shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h6>Average Duration</h6>
-
-                    <h2>{{ avg_duration }} sec</h2>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-3">
-
-            <div class="card shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h6>Running Builds</h6>
-
-                    <h2>{{ running_count }}</h2>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Pipeline Health -->
-
-    <div class="card shadow-sm mb-4">
-
-        <div class="card-header">
-
-            <strong>Pipeline Health</strong>
-
-        </div>
+    <div class="card border-0 shadow-lg mb-4 rounded-4">
 
         <div class="card-body">
 
-            {% if success_rate >= 90 %}
+            <div class="row align-items-center">
 
-                <span class="badge bg-success fs-6">
+                <div class="col-lg-8">
 
-                    Healthy
+                    <h2 class="fw-bold mb-2">
 
-                </span>
+                        <i class="bi bi-diagram-3-fill text-primary"></i>
 
-            {% elif success_rate >= 70 %}
+                        {{ pipeline.name }}
 
-                <span class="badge bg-warning text-dark fs-6">
+                    </h2>
 
-                    Stable
+                    <p class="text-muted mb-0">
 
-                </span>
+                        {{ pipeline.description }}
 
-            {% else %}
+                    </p>
 
-                <span class="badge bg-danger fs-6">
+                </div>
 
-                    Needs Attention
+                <div class="col-lg-4 text-end">
 
-                </span>
+                    <a href="{% url 'run_pipeline' pipeline.id %}"
 
-            {% endif %}
+                       class="btn btn-success btn-lg">
+
+                        <i class="bi bi-play-fill"></i>
+
+                        Run Build
+
+                    </a>
+
+                    <a href="{% url 'edit_pipeline' pipeline.id %}"
+
+                       class="btn btn-warning btn-lg">
+
+                        <i class="bi bi-pencil-fill"></i>
+
+                        Edit
+
+                    </a>
+
+                </div>
+
+            </div>
 
         </div>
 
     </div>
 
-    <!-- Pipeline Information -->
 
-    <div class="card shadow-sm mb-4">
 
-        <div class="card-header">
+    <!-- KPI Cards -->
 
-            <strong>Pipeline Information</strong>
+    <div class="row g-4 mb-4">
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card dashboard-stat shadow">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <small>Total Builds</small>
+
+                            <h2>
+
+                                {{ total_builds }}
+
+                            </h2>
+
+                        </div>
+
+                        <div class="icon-circle bg-primary">
+
+                            <i class="bi bi-hammer text-white fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 
-        <div class="card-body">
 
-            <table class="table">
 
-                <tr>
+        <div class="col-xl-3 col-md-6">
 
-                    <th>Project</th>
+            <div class="card dashboard-stat shadow">
 
-                    <td>{{ pipeline.project.name }}</td>
+                <div class="card-body">
 
-                </tr>
+                    <div class="d-flex justify-content-between">
 
-                <tr>
+                        <div>
 
-                    <th>Repository</th>
+                            <small>Success Rate</small>
 
-                    <td>
+                            <h2 class="text-success">
 
-                        <a href="{{ pipeline.repository_url }}"
-                           target="_blank">
+                                {{ success_rate }}%
 
-                            {{ pipeline.repository_url }}
+                            </h2>
+
+                        </div>
+
+                        <div class="icon-circle bg-success">
+
+                            <i class="bi bi-check-circle-fill text-white fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card dashboard-stat shadow">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <small>Average Duration</small>
+
+                            <h2>
+
+                                {{ avg_duration }}
+
+                            </h2>
+
+                            <small>
+
+                                Seconds
+
+                            </small>
+
+                        </div>
+
+                        <div class="icon-circle bg-warning">
+
+                            <i class="bi bi-clock-fill text-white fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card dashboard-stat shadow">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <small>Running Builds</small>
+
+                            <h2 class="text-warning">
+
+                                {{ running_count }}
+
+                            </h2>
+
+                        </div>
+
+                        <div class="icon-circle bg-danger">
+
+                            <i class="bi bi-cpu-fill text-white fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="row">
+
+        <!-- LEFT COLUMN -->
+
+        <div class="col-lg-8">
+                        <!-- Pipeline Health -->
+
+            <div class="card border-0 shadow-lg rounded-4 mb-4">
+
+                <div class="card-header bg-white">
+
+                    <h4 class="fw-bold">
+
+                        <i class="bi bi-heart-pulse-fill text-danger"></i>
+
+                        Pipeline Health
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if success_rate >= 90 %}
+
+                    <div class="alert alert-success">
+
+                        <h5>
+
+                            🟢 Excellent
+
+                        </h5>
+
+                        <p class="mb-0">
+
+                            Your pipeline is healthy.
+
+                        </p>
+
+                    </div>
+
+                    {% elif success_rate >= 70 %}
+
+                    <div class="alert alert-warning">
+
+                        <h5>
+
+                            🟡 Stable
+
+                        </h5>
+
+                        <p class="mb-0">
+
+                            Pipeline is running with minor issues.
+
+                        </p>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="alert alert-danger">
+
+                        <h5>
+
+                            🔴 Needs Attention
+
+                        </h5>
+
+                        <p class="mb-0">
+
+                            Frequent failures detected.
+
+                        </p>
+
+                    </div>
+
+                    {% endif %}
+
+
+
+                    <div class="progress mt-4"
+
+                         style="height:18px;">
+
+                        <div
+
+                            class="progress-bar bg-success"
+
+                            role="progressbar"
+
+                            style="width:{{ success_rate }}%;">
+
+                            {{ success_rate }}%
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Pipeline Information -->
+
+            <div class="card border-0 shadow-lg rounded-4 mb-4">
+
+                <div class="card-header bg-white">
+
+                    <h4 class="fw-bold">
+
+                        <i class="bi bi-info-circle-fill text-primary"></i>
+
+                        Pipeline Information
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table align-middle">
+
+                        <tbody>
+
+                            <tr>
+
+                                <th width="220">
+
+                                    Project
+
+                                </th>
+
+                                <td>
+
+                                    {{ pipeline.project.name }}
+
+                                </td>
+
+                            </tr>
+
+                            <tr>
+
+                                <th>
+
+                                    Repository
+
+                                </th>
+
+                                <td>
+
+                                    <a href="{{ pipeline.repository_url }}"
+
+                                       target="_blank">
+
+                                        {{ pipeline.repository_url }}
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                            <tr>
+
+                                <th>
+
+                                    Branch
+
+                                </th>
+
+                                <td>
+
+                                    <span class="badge bg-primary">
+
+                                        {{ pipeline.branch }}
+
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                            <tr>
+
+                                <th>
+
+                                    Jenkins Job
+
+                                </th>
+
+                                <td>
+
+                                    <span class="badge bg-dark">
+
+                                        {{ pipeline.jenkins_job_name }}
+
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                            <tr>
+
+                                <th>
+
+                                    Pipeline Status
+
+                                </th>
+
+                                <td>
+
+                                    {% if pipeline.is_active %}
+
+                                    <span class="badge bg-success">
+
+                                        Active
+
+                                    </span>
+
+                                    {% else %}
+
+                                    <span class="badge bg-danger">
+
+                                        Inactive
+
+                                    </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Repository Card -->
+
+            <div class="card border-0 shadow-lg rounded-4">
+
+                <div class="card-header bg-white">
+
+                    <h4 class="fw-bold">
+
+                        <i class="bi bi-github"></i>
+
+                        Repository
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <small class="text-muted">
+
+                                Repository URL
+
+                            </small>
+
+                            <br>
+
+                            <a href="{{ pipeline.repository_url }}"
+
+                               target="_blank">
+
+                                {{ pipeline.repository_url }}
+
+                            </a>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <small class="text-muted">
+
+                                Branch
+
+                            </small>
+
+                            <h5 class="mt-2">
+
+                                {{ pipeline.branch }}
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <small class="text-muted">
+
+                                Jenkins
+
+                            </small>
+
+                            <h5 class="mt-2">
+
+                                Connected
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- RIGHT COLUMN -->
+
+        <div class="col-lg-4">
+                        <!-- Latest Build -->
+
+            <div class="card border-0 shadow-lg rounded-4 mb-4">
+
+                <div class="card-header bg-white">
+
+                    <h4 class="fw-bold">
+
+                        <i class="bi bi-lightning-charge-fill text-warning"></i>
+
+                        Latest Build
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if recent_builds %}
+
+                        {% with latest=recent_builds.0 %}
+
+                        <h2 class="fw-bold">
+
+                            #{{ latest.build_number }}
+
+                        </h2>
+
+                        <p class="mb-3">
+
+                            <strong>Status:</strong>
+
+                            {% if latest.status == "SUCCESS" %}
+
+                                <span class="badge bg-success">
+
+                                    SUCCESS
+
+                                </span>
+
+                            {% elif latest.status == "FAILED" %}
+
+                                <span class="badge bg-danger">
+
+                                    FAILED
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    RUNNING
+
+                                </span>
+
+                            {% endif %}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Duration:</strong>
+
+                            {{ latest.duration }} sec
+
+                        </p>
+
+                        <a href="{% url 'build_detail' latest.id %}"
+
+                           class="btn btn-outline-primary w-100">
+
+                            View AI Analysis
 
                         </a>
 
-                    </td>
+                        {% endwith %}
 
-                </tr>
+                    {% else %}
 
-                <tr>
+                        <div class="alert alert-info">
 
-                    <th>Branch</th>
+                            No Builds Yet
 
-                    <td>{{ pipeline.branch }}</td>
+                        </div>
 
-                </tr>
+                    {% endif %}
 
-                <tr>
+                </div>
 
-                    <th>Jenkins Job</th>
+            </div>
 
-                    <td>{{ pipeline.jenkins_job_name }}</td>
 
-                </tr>
 
-                <tr>
+            <!-- Recent Activity -->
 
-                    <th>Status</th>
+            <div class="card border-0 shadow-lg rounded-4 mb-4">
 
-                    <td>
+                <div class="card-header bg-white">
 
-                        {% if pipeline.is_active %}
+                    <h4 class="fw-bold">
 
-                            <span class="badge bg-success">
+                        Recent Activity
 
-                                Active
+                    </h4>
 
-                            </span>
+                </div>
 
-                        {% else %}
+                <div class="card-body">
 
-                            <span class="badge bg-danger">
+                    {% if recent_builds %}
 
-                                Inactive
+                        <ul class="list-group list-group-flush">
 
-                            </span>
+                        {% for build in recent_builds|slice:":5" %}
 
-                        {% endif %}
+                            <li class="list-group-item">
 
-                    </td>
+                                Build
 
-                </tr>
+                                #{{ build.build_number }}
 
-            </table>
+                                —
+
+                                {{ build.status }}
+
+                            </li>
+
+                        {% endfor %}
+
+                        </ul>
+
+                    {% else %}
+
+                        <p class="text-muted">
+
+                            No recent activity.
+
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Build Summary -->
+
+            <div class="card border-0 shadow-lg rounded-4">
+
+                <div class="card-header bg-white">
+
+                    <h4 class="fw-bold">
+
+                        Build Summary
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row text-center">
+
+                        <div class="col-4">
+
+                            <h3 class="text-success">
+
+                                {{ success_count }}
+
+                            </h3>
+
+                            <small>
+
+                                Success
+
+                            </small>
+
+                        </div>
+
+                        <div class="col-4">
+
+                            <h3 class="text-danger">
+
+                                {{ failed_count }}
+
+                            </h3>
+
+                            <small>
+
+                                Failed
+
+                            </small>
+
+                        </div>
+
+                        <div class="col-4">
+
+                            <h3 class="text-warning">
+
+                                {{ running_count }}
+
+                            </h3>
+
+                            <small>
+
+                                Running
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 
     </div>
 
+
+
     <!-- Recent Builds -->
 
-    <div class="card shadow-sm">
+    <div class="card border-0 shadow-lg rounded-4 mt-4">
 
-        <div class="card-header">
+        <div class="card-header bg-white">
 
-            <strong>Recent Builds</strong>
+            <h4 class="fw-bold">
+
+                <i class="bi bi-clock-history"></i>
+
+                Recent Builds
+
+            </h4>
 
         </div>
 
-        <div class="card-body">
+        <div class="table-responsive">
 
-            {% if recent_builds %}
-
-            <table class="table table-hover">
+            <table class="table table-hover align-middle">
 
                 <thead>
 
@@ -254,7 +807,9 @@
 
                         <th>Duration</th>
 
-                        <th>AI Analysis</th>
+                        <th>Date</th>
+
+                        <th></th>
 
                     </tr>
 
@@ -262,7 +817,7 @@
 
                 <tbody>
 
-                    {% for build in recent_builds %}
+                {% for build in recent_builds %}
 
                     <tr>
 
@@ -310,10 +865,17 @@
 
                         <td>
 
+                            {{ build.created_at|date:"d M Y H:i" }}
+
+                        </td>
+
+                        <td>
+
                             <a href="{% url 'build_detail' build.id %}"
+
                                class="btn btn-primary btn-sm">
 
-                                View Analysis
+                                AI Analysis
 
                             </a>
 
@@ -321,21 +883,25 @@
 
                     </tr>
 
-                    {% endfor %}
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="5"
+
+                            class="text-center">
+
+                            No Builds Found
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
 
                 </tbody>
 
             </table>
-
-            {% else %}
-
-            <div class="alert alert-info">
-
-                No builds available for this pipeline.
-
-            </div>
-
-            {% endif %}
 
         </div>
 

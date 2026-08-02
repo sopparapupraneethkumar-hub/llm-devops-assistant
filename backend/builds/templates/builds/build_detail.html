@@ -4,144 +4,196 @@
 
 <div class="container-fluid">
 
-<div class="card shadow-sm border-0">
+    <div class="card border-0 shadow-lg rounded-4 mb-4">
 
-<div class="card-header">
+        <div class="card-body">
 
-<h4>
+            <div class="row align-items-center">
 
-Build #{{ build.build_number }}
+                <div class="col-lg-8">
 
-</h4>
+                    <h2 class="fw-bold">
 
-</div>
+                        🤖 AI Analysis
 
-<div class="card-body">
+                    </h2>
 
-<div class="row">
+                    <p class="text-muted">
 
-<div class="col-md-6">
+                        AI-Powered Build Investigation
 
-<p>
+                        Build #{{ build.build_number }}
 
-<strong>Status:</strong>
+                    </p>
 
-{% if build.status == "SUCCESS" %}
+                </div>
 
-<span class="badge bg-success">
+                <div class="col-lg-4 text-end">
 
-SUCCESS
+                    {% if build.status == "SUCCESS" %}
 
-</span>
+                    <span class="badge bg-success fs-6">
 
-{% elif build.status == "FAILED" %}
+                        SUCCESS
 
-<span class="badge bg-danger">
+                    </span>
 
-FAILED
+                    {% elif build.status == "FAILED" %}
 
-</span>
+                    <span class="badge bg-danger fs-6">
 
-{% elif build.status == "RUNNING" %}
+                        FAILED
 
-<span class="badge bg-warning">
+                    </span>
 
-RUNNING
+                    {% else %}
 
-</span>
+                    <span class="badge bg-warning fs-6">
 
-{% else %}
+                        RUNNING
 
-<span class="badge bg-secondary">
+                    </span>
 
-{{ build.status }}
+                    {% endif %}
 
-</span>
+                </div>
 
-{% endif %}
+            </div>
 
-</p>
+        </div>
 
-<p>
+    </div>
 
-<strong>Duration:</strong>
 
-{{ build.duration }} sec
 
-</p>
+    <div class="row">
 
-<p>
+        <div class="col-lg-4">
 
-<strong>Project:</strong>
+            <div class="card border-0 shadow-lg rounded-4 mb-4">
 
-{{ build.project_name }}
+                <div class="card-header">
 
-</p>
+                    Build Details
 
-<p>
+                </div>
 
-<strong>Branch:</strong>
+                <div class="card-body">
 
-{{ build.branch }}
+                    <table class="table">
 
-</p>
+                        <tr>
 
-<p>
+                            <th>Project</th>
 
-<strong>Created:</strong>
+                            <td>{{ build.project_name }}</td>
 
-{{ build.created_at }}
+                        </tr>
 
-</p>
+                        <tr>
 
-</div>
+                            <th>Branch</th>
 
-<div class="col-md-6">
+                            <td>{{ build.branch }}</td>
 
-<div class="card border-success">
+                        </tr>
 
-<div class="card-header">
+                        <tr>
 
-<strong>
+                            <th>Duration</th>
 
-AI Analysis
+                            <td>{{ build.duration }} sec</td>
 
-</strong>
+                        </tr>
 
-</div>
+                        <tr>
 
-<div class="card-body">
+                            <th>Created</th>
 
-{{ build.ai_summary|default:"AI analysis pending." }}
+                            <td>{{ build.created_at }}</td>
 
-</div>
+                        </tr>
 
-</div>
+                    </table>
 
-</div>
+                </div>
 
-</div>
+            </div>
 
-<hr>
+        </div>
 
-<h5>
 
-Console Log
 
-</h5>
+        <div class="col-lg-8">
 
-<pre
-class="bg-dark text-light p-3 rounded"
-style="max-height:500px;overflow:auto;"
->
+            <div class="card border-0 shadow-lg rounded-4 mb-4">
 
-{{ build.console_log|default:"Console log not available." }}
+                <div class="card-header">
+
+                    🤖 AI Analysis
+
+                </div>
+
+                <div class="card-body ai-summary">
+
+                    {{ build.ai_summary|linebreaks }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="mb-4">
+
+        <a
+            href="{% url 'dashboard' %}"
+            class="btn btn-primary">
+
+            <i class="bi bi-arrow-left"></i>
+
+                Dashboard
+
+        </a>
+
+        <a
+            href="{% url 'pipeline_list' %}"
+            class="btn btn-outline-dark ms-2">
+
+            <i class="bi bi-diagram-3"></i>
+
+            Pipelines
+
+        </a>
+
+    </div>
+
+    <div class="card border-0 shadow-lg rounded-4">
+
+        <div class="card-header d-flex justify-content-between">
+
+            <span>
+
+                Console Log
+
+            </span>
+
+        </div>
+
+        <div class="card-body">
+
+<pre class="bg-dark text-light rounded p-4"
+style="max-height:600px;overflow:auto;">
+
+{{ build.console_log }}
 
 </pre>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
 </div>
 

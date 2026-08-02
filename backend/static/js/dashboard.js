@@ -114,18 +114,51 @@ function updateDashboard() {
 
 
             const aiSummary = document.getElementById(
-
                 "latest-ai-summary"
-
             );
-
-
 
             if (aiSummary) {
 
-                aiSummary.innerHTML =
+                const summary = (data.latest_build.summary || "").trim();
 
-                    data.latest_build.summary;
+                const isError = /429|RESOURCE_EXHAUSTED|GEMINI ERROR|Exception Type|ClientError|quota/i.test(summary);
+
+                if (isError) {
+
+                    aiSummary.innerHTML = `
+                        <div class="text-center py-2 px-1">
+                            <i class="bi bi-hourglass-split fs-2 text-warning d-block mb-2"></i>
+                            <h6 class="fw-bold mb-1">AI Analysis Temporarily Unavailable</h6>
+                            <p class="text-muted small mb-2">
+                                The Gemini API quota has been exceeded. Build results are unaffected — only this summary is delayed.
+                            </p>
+                            <a href="https://ai.google.dev/gemini-api/docs/rate-limits" target="_blank" rel="noopener" class="small">
+                                View quota &amp; billing details
+                            </a>
+                        </div>
+                    `;
+
+                } else if (summary) {
+
+                    const escaped = summary
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/\n{2,}/g, "\n")
+                        .trim();
+
+                    aiSummary.innerHTML = `<p class="mb-0">${escaped.replace(/\n/g, "<br>")}</p>`;
+
+                } else {
+
+                    aiSummary.innerHTML = `
+                        <div class="text-center py-2 px-1 text-muted">
+                            <i class="bi bi-robot fs-2 d-block mb-2"></i>
+                            <p class="small mb-0">AI Summary not available yet.</p>
+                        </div>
+                    `;
+
+                }
 
             }
 

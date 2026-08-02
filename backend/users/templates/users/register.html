@@ -25,8 +25,19 @@
     <form method="POST">
 
         {% csrf_token %}
+        {% for field in form %}
 
-        {{ form.as_p }}
+        <div class="mb-3">
+
+            {{ field.label_tag }}
+
+            {{ field }}
+
+            {{ field.errors }}
+
+        </div>
+
+        {% endfor %}
 
         <button class="btn btn-success auth-btn mt-3">
 
