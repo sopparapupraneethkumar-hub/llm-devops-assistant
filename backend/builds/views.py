@@ -8,6 +8,14 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 
 from pipeline.models import Pipeline
+
+from ai_engine.services import (
+    generate_build_summary,
+    generate_ai_summary,
+)
+
+from .serializers import BuildSerializer
+from .models import Build
 from ai_engine.services import (
     generate_build_summary,
     generate_ai_summary,
@@ -37,14 +45,11 @@ class BuildCreateView(APIView):
 
         if serializer.is_valid():
 
-            try:
+            pipeline = Pipeline.objects.filter(
+                jenkins_job_name=job_name
+            ).order_by("-id").first()
 
-                pipeline = Pipeline.objects.get(
-                    owner=request.user,
-                    jenkins_job_name=job_name,
-                )
-
-            except Pipeline.DoesNotExist:
+            if not pipeline:
 
                 return Response(
                     {
@@ -68,34 +73,56 @@ class BuildCreateView(APIView):
             )
 
             print()
-
-            print(
-                console_log[:500]
-            )
-
+            print(console_log[:500])
             print("=" * 60)
 
-            build = serializer.save(
-                owner=request.user,
+            build = Build.objects.filter(
                 pipeline=pipeline,
-            )
+                status="RUNNING",
+            ).order_by("-id").first()
 
-            ai_summary = generate_build_summary(
-                build.console_log
-            )
+            if build:
 
-            build.ai_summary = ai_summary
+                build.build_number = serializer.validated_data["build_number"]
+                build.project_name = serializer.validated_data["project_name"]
+                build.branch = serializer.validated_data["branch"]
+                build.status = serializer.validated_data["status"]
+                build.duration = serializer.validated_data["duration"]
+                build.console_log = serializer.validated_data["console_log"]
 
-            build.save()
+                build.save()
 
-            generate_ai_summary(build)
+            else:
+
+                build = serializer.save(
+                    owner=pipeline.owner,
+                    pipeline=pipeline,
+                )
+
+            try:
+
+                ai_summary = generate_build_summary(
+                    build.console_log
+                )
+
+                build.ai_summary = ai_summary
+                build.save()
+
+                generate_ai_summary(build)
+
+            except Exception as e:
+
+                print("=" * 60)
+                print("AI ERROR")
+                print(e)
+                print("=" * 60)
 
             return Response(
                 {
-                    "message": "Build created successfully",
+                    "message": "Build processed successfully",
                     "data": BuildSerializer(build).data,
                 },
-                status=status.HTTP_201_CREATED,
+                status=status.HTTP_200_OK,
             )
 
         return Response(
@@ -103,13 +130,13 @@ class BuildCreateView(APIView):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-
 @login_required
 def build_detail(request, pk):
 
     build = get_object_or_404(
         Build,
         pk=pk,
+        owner=request.user,
     )
 
     return render(

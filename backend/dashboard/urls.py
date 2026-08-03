@@ -16,12 +16,6 @@ urlpatterns = [
     ),
 
     path(
-        "run-build/",
-        views.run_build,
-        name="run_build",
-    ),
-
-    path(
         "build-status/",
         views.build_status,
         name="build_status",
@@ -32,10 +26,10 @@ urlpatterns = [
         views.recent_builds,
         name="recent_builds",
     ),
-    path(
-    "reports/",
-    views.reports,
-    name="reports",
-    ),
 
+    path(
+        "reports/",
+        views.reports,
+        name="reports",
+    ),
 ]

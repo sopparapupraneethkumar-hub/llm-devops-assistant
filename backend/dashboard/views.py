@@ -1,13 +1,13 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
+
 from projects.models import Project
 from builds.models import Build
 from pipeline.models import Pipeline
-from dashboard.services.jenkins_service import trigger_build
 from django.db.models import Avg
-
+from pipeline.services import JenkinsService
 def home(request):
 
     if request.user.is_authenticated:
@@ -25,9 +25,13 @@ def home(request):
 @login_required
 def ai_analysis(request):
 
-    latest_build = Build.objects.order_by(
-        "-created_at"
-    ).first()
+    pipelines = Pipeline.objects.filter(
+        owner=request.user
+    )
+
+    latest_build = Build.objects.filter(
+        pipeline__in=pipelines
+    ).order_by("-created_at").first()
 
     if latest_build:
 
@@ -46,7 +50,13 @@ def ai_analysis(request):
 @login_required
 def dashboard(request):
 
-    builds = Build.objects.order_by("-created_at")
+    pipelines = Pipeline.objects.filter(
+        owner=request.user
+    )
+
+    builds = Build.objects.filter(
+        pipeline__in=pipelines
+    ).order_by("-created_at")
 
     total_projects = Project.objects.filter(
         owner=request.user
@@ -56,6 +66,8 @@ def dashboard(request):
         owner=request.user
     ).order_by("-created_at")[:5]
 
+    default_pipeline = pipelines.first()
+
     context = {
         "latest_build": builds.first(),
         "total_builds": builds.count(),
@@ -63,13 +75,10 @@ def dashboard(request):
         "failed_builds": builds.filter(status="FAILED").count(),
         "running_builds": builds.filter(status="RUNNING").count(),
         "recent_builds": builds[:5],
-        "recent_pipelines": Pipeline.objects.filter(
-            owner=request.user
-        ).order_by("-created_at")[:5],
-
-        # Projects
+        "recent_pipelines": pipelines.order_by("-created_at")[:5],
         "total_projects": total_projects,
         "recent_projects": recent_projects,
+        "default_pipeline": default_pipeline,
     }
 
     return render(
@@ -79,34 +88,62 @@ def dashboard(request):
     )
 
 @login_required
-def run_build(request):
+def run_pipeline(request, pipeline_id):
 
-    if request.method == "POST":
+    if request.method != "POST":
+        return redirect("pipeline_list")
 
-        result = trigger_build()
+    pipeline = get_object_or_404(
+        Pipeline,
+        id=pipeline_id,
+        owner=request.user
+    )
 
-        if result["success"]:
+    print("=" * 60)
+    print("Pipeline ID:", pipeline.id)
+    print("Pipeline Name:", pipeline.name)
+    print("Pipeline Job:", pipeline.jenkins_job_name)
+    print("=" * 60)
+    running_build = Build.objects.create(
+    owner=request.user,
+    pipeline=pipeline,
+    build_number=0,
+    project_name=pipeline.name,
+    branch="main",
+    status="RUNNING",
+    duration=0,
+    console_log="",
+)
 
-            messages.success(
-                request,
-                f"Build Queued Successfully (HTTP {result['status_code']})"
-            )
+    success = JenkinsService.trigger_build(
+        pipeline.jenkins_job_name
+    )
 
-        else:
+    if success:
 
-            messages.error(
-                request,
-                f"Jenkins Error: {result['message']}"
-            )
+        messages.success(
+            request,
+            f"{pipeline.name} build triggered successfully."
+        )
 
-    return redirect("dashboard")
+    else:
 
+        messages.error(
+            request,
+            "Failed to trigger Jenkins build."
+        )
+
+    return redirect("pipeline_list")
 
 @login_required
 def build_status(request):
+    pipelines = Pipeline.objects.filter(
+        owner=request.user
+    )
 
-    builds = Build.objects.order_by("-created_at")
-
+    builds = Build.objects.filter(
+        pipeline__in=pipelines
+    ).order_by("-created_at")
     latest = builds.first()
 
     if latest is None:
@@ -180,7 +217,13 @@ def build_status(request):
 @login_required
 def recent_builds(request):
 
-    builds = Build.objects.order_by("-created_at")[:5]
+    pipelines = Pipeline.objects.filter(
+        owner=request.user
+    )
+
+    builds = Build.objects.filter(
+        pipeline__in=pipelines
+    ).order_by("-created_at")[:5]
 
     data = []
 
@@ -201,7 +244,13 @@ def recent_builds(request):
 @login_required
 def reports(request):
 
-    builds = Build.objects.all()
+    pipelines = Pipeline.objects.filter(
+        owner=request.user
+    )
+
+    builds = Build.objects.filter(
+        pipeline__in=pipelines
+    )
 
     total_builds = builds.count()
 

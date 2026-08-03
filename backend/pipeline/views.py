@@ -12,7 +12,6 @@ from .models import Pipeline
 from .forms import PipelineForm
 from .services import JenkinsService
 
-
 @login_required
 def home(request):
     return HttpResponse("Welcome to the LLM DevOps Assistant")
@@ -160,10 +159,16 @@ def run_pipeline(request, pipeline_id):
         id=pipeline_id,
         owner=request.user,
     )
+    print("=" * 60)
+    print("PIPELINE ID :", pipeline.id)
+    print("PIPELINE NAME :", pipeline.name)
+    print("JENKINS JOB :", repr(pipeline.jenkins_job_name))
+    print("=" * 60)
 
     success = JenkinsService.trigger_build(
         pipeline.jenkins_job_name
     )
+
 
     if success:
 

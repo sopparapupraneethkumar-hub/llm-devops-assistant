@@ -43,7 +43,6 @@ class Project(models.Model):
     description = models.TextField(blank=True)
 
     repository_url = models.URLField(blank=True)
-
     default_branch = models.CharField(
         max_length=100,
         default="main"

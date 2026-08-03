@@ -8,21 +8,12 @@ sys.path.insert(0, BASE_DIR)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
-from ai_engine.services import generate_build_summary
+from google import genai
+from django.conf import settings
 
-sample_log = """
-Started by user Praneeth Kumar
+client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
-Collecting packages...
-Installing dependencies...
+print("\n========== AVAILABLE MODELS ==========\n")
 
-Traceback (most recent call last):
-ModuleNotFoundError: No module named 'psycopg'
-
-Finished: FAILURE
-"""
-
-summary = generate_build_summary(sample_log)
-
-print("\n========== AI SUMMARY ==========\n")
-print(summary)
+for model in client.models.list():
+    print(model.name)

@@ -4,7 +4,7 @@
 
 <div class="auth-card">
 
-    <div class="text-center mb-4">
+    <div class="text-center mb-5">
 
         <i class="bi bi-person-plus-fill display-4 text-primary"></i>
 
@@ -38,8 +38,7 @@
         </div>
 
         {% endfor %}
-
-        <button class="btn btn-success auth-btn mt-3">
+        <button class="btn auth-btn mt-3"></button>
 
             <i class="bi bi-person-check-fill"></i>
 
@@ -51,13 +50,17 @@
 
     <hr>
 
-    <div class="text-center">
+    <div class="text-center auth-footer">
 
-        Already have an account?
+        <p class="mb-2">
 
-        <a href="{% url 'login' %}">
+            Already have an account?
 
-            Login
+        </p>
+
+        <a href="{% url 'login' %}" class="register-btn">
+
+            Sign In →
 
         </a>
 

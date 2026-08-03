@@ -17,7 +17,32 @@ class ProjectForm(forms.ModelForm):
         ]
 
         widgets = {
+
             "description": forms.Textarea(
-                attrs={"rows": 4}
-            )
+                attrs={
+                    "rows": 4,
+                    "class": "form-control",
+                }
+            ),
+
+            "repository_url": forms.URLInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "https://github.com/username/repository.git",
+                }
+            ),
+
+            "jenkins_job": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "python-demo-pipeline",
+                }
+            ),
+
+            "default_branch": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "main",
+                }
+            ),
         }

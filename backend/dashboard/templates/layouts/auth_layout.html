@@ -7,74 +7,35 @@ Authentication | LLM DevOps Assistant
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
 {% endblock %}
 
 {% block body %}
 
-<div class="auth-page">
+<div class="container-fluid p-0">
 
-    <div class="container-fluid">
+    <div class="row g-0 auth-page">
 
-        <div class="row min-vh-100">
+        <!-- LEFT SIDE -->
+        <div class="col-lg-6 d-none d-lg-block p-0">
 
-            <div class="col-lg-6 d-none d-lg-flex auth-left">
+            <div class="auth-image">
 
-                <div class="hero-content">
-
-                    <i class="bi bi-cpu-fill display-1 mb-4"></i>
-
-                    <h1>
-
-                        LLM DevOps Assistant
-
-                    </h1>
-
-                    <p>
-
-                        AI Powered CI/CD Monitoring Platform
-
-                    </p>
-
-                    <div class="feature-list">
-
-                        <div>
-
-                            ✅ Jenkins Integration
-
-                        </div>
-
-                        <div>
-
-                            ✅ Gemini AI Analysis
-
-                        </div>
-
-                        <div>
-
-                            ✅ Live Dashboard
-
-                        </div>
-
-                        <div>
-
-                            ✅ Reports & Analytics
-
-                        </div>
-
-                    </div>
-
-                </div>
+                <img
+                    src="{% static 'images/login-hero.png' %}"
+                    alt="LLM DevOps Assistant">
 
             </div>
 
-            <div class="col-lg-6 d-flex align-items-center justify-content-center">
+        </div>
 
-                <div class="auth-container">
+        <!-- RIGHT SIDE -->
+        <div class="col-lg-6 d-flex justify-content-center align-items-center p-0">
 
-                    {% block auth_content %}
-                    {% endblock %}
+            <div class="auth-container w-100">
 
-                </div>
+                {% block auth_content %}
+                {% endblock %}
 
             </div>
 
