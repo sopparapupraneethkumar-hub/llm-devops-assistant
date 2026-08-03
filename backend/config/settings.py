@@ -103,7 +103,8 @@ DATABASES = {
         default=os.getenv(
             "DATABASE_URL",
             "postgresql://postgres:postgres123@localhost:5433/llm_devops_db"
-        )
+        ),
+        conn_max_age=600,
     )
 }
 
@@ -148,7 +149,15 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 LOGIN_URL = "/login/"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")

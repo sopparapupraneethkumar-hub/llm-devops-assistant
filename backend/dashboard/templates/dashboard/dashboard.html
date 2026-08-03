@@ -436,40 +436,64 @@
                     </h4>
 
                 </div>
-
                 <div class="card-body">
 
                     <div class="d-grid gap-3">
 
                         <a href="{% url 'create_pipeline' %}"
-
-                           class="btn btn-primary btn-lg">
+                        class="btn btn-primary btn-lg">
 
                             <i class="bi bi-plus-circle-fill"></i>
 
-                            Create Pipeline
+                                Create Pipeline
 
                         </a>
+
+                        {% if default_pipeline %}
+
                         <form method="POST"
-                            action="{% url 'run_pipeline' default_pipeline.id %}"
-                            class="w-100">
-                            {% csrf_token %}
-                            <button type="submit"
-                                class="btn btn-success btn-lg w-100">
-                                <i class="bi bi-play-circle-fill"></i>
-                                    Run Build
-                            </button>
+                        action="{% url 'run_pipeline' default_pipeline.id %}"
+                        class="w-100">
+
+                        {% csrf_token %}
+
+                        <button type="submit"
+                        class="btn btn-success btn-lg w-100">
+
+                            <i class="bi bi-play-circle-fill"></i>
+
+                                Run Build
+
+                        </button>
+
                         </form>
 
-                        <a href="{% url 'ai_analysis' %}" class="btn btn-warning btn-lg">
-                             AI Analysis
+                        {% else %}
+
+                        <a href="{% url 'create_pipeline' %}"
+                        class="btn btn-success btn-lg">
+
+                            <i class="bi bi-plus-circle-fill"></i>
+
+                                Create Your First Pipeline
+
                         </a>
 
-                        <a href="{% url 'reports' %}" class="btn btn-dark btn-lg">
-                                Reports
+                        {% endif %}
+
+                        <a href="{% url 'ai_analysis' %}"
+                        class="btn btn-warning btn-lg">
+
+                        AI Analysis
+
                         </a>
 
-                    </div>
+                        <a href="{% url 'reports' %}"
+                        class="btn btn-dark btn-lg">
+
+                            Reports
+
+                        </a>
 
                 </div>
 
