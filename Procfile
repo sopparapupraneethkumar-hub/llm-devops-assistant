@@ -1,1 +1,1 @@
-web: bash start.sh
+web: sh -c "if [ -f backend/manage.py ]; then python backend/manage.py migrate --no-input && python backend/manage.py collectstatic --no-input && exec gunicorn --chdir backend config.wsgi:application --bind 0.0.0.0:${PORT:-8000}; else python manage.py migrate --no-input && python manage.py collectstatic --no-input && exec gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000}; fi"
