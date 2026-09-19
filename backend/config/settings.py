@@ -102,12 +102,17 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    # If running in cloud environments (Railway/Render) without a database attached, fallback to SQLite
+    if os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("RENDER") or os.getenv("PORT"):
+        DATABASE_URL = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+    else:
+        DATABASE_URL = "postgresql://postgres:postgres123@localhost:5433/llm_devops_db"
+
 DATABASES = {
     "default": dj_database_url.config(
-        default=os.getenv(
-            "DATABASE_URL",
-            "postgresql://postgres:postgres123@localhost:5433/llm_devops_db"
-        ),
+        default=DATABASE_URL,
         conn_max_age=600,
     )
 }
@@ -153,6 +158,7 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT.mkdir(parents=True, exist_ok=True)
 
 STORAGES = {
     "default": {
