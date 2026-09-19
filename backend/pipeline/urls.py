@@ -1,6 +1,5 @@
 from django.urls import path
 from .views import (
-    home,
     pipeline_list,
     create_pipeline,
     edit_pipeline,
@@ -10,7 +9,6 @@ from .views import (
 )
 
 urlpatterns = [
-    path("", home, name="home"),
     path("pipelines/", pipeline_list, name="pipeline_list"),
     path("pipelines/create/", create_pipeline, name="create_pipeline"),
     path(

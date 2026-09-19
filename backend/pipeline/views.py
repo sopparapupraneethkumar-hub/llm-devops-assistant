@@ -12,9 +12,6 @@ from .models import Pipeline
 from .forms import PipelineForm
 from .services import JenkinsService
 
-@login_required
-def home(request):
-    return HttpResponse("Welcome to the LLM DevOps Assistant")
 
 
 @login_required
@@ -169,19 +166,25 @@ def run_pipeline(request, pipeline_id):
         pipeline.jenkins_job_name
     )
 
-
     if success:
-
+        Build.objects.create(
+            owner=request.user,
+            pipeline=pipeline,
+            build_number=0,
+            project_name=pipeline.name,
+            branch="main",
+            status="RUNNING",
+            duration=0,
+            console_log="",
+        )
         messages.success(
             request,
-            "Build triggered successfully.",
+            f"{pipeline.name} build triggered successfully.",
         )
-
     else:
-
         messages.error(
             request,
-            "Failed to trigger Jenkins build.",
+            "Failed to trigger Jenkins build. Please verify Jenkins URL and credentials.",
         )
 
     return redirect(

@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setInterval(loadDashboard, 5000);
 
     const runBuildForm = document.querySelector(
-        'form[action*="run-build"]'
+        'form[action*="/run/"], form[action*="run-build"]'
     );
 
     if (runBuildForm) {

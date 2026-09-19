@@ -6,22 +6,25 @@ class JenkinsService:
 
     @staticmethod
     def trigger_build(job_name):
-        print("=" * 60)
-        print("SETTINGS USER :", settings.JENKINS_USERNAME)
-        print("TOKEN PREFIX  :", settings.JENKINS_API_TOKEN[:10])
-        print("=" * 60)
-
-        auth = (
-            settings.JENKINS_USERNAME,
-            settings.JENKINS_API_TOKEN,
-        )
-
         try:
+            jenkins_url = getattr(settings, "JENKINS_URL", "") or ""
+            jenkins_user = getattr(settings, "JENKINS_USERNAME", "") or ""
+            jenkins_token = getattr(settings, "JENKINS_API_TOKEN", "") or ""
 
-            crumb_url = (
-                f"{settings.JENKINS_URL}"
-                "/crumbIssuer/api/json"
-            )
+            if not jenkins_url or not jenkins_token:
+                print("=" * 60)
+                print("JENKINS CONFIG MISSING: JENKINS_URL or JENKINS_API_TOKEN not set")
+                print("=" * 60)
+                return False
+
+            print("=" * 60)
+            print("SETTINGS USER :", jenkins_user)
+            print("TOKEN PREFIX  :", jenkins_token[:10] if jenkins_token else "")
+            print("=" * 60)
+
+            auth = (jenkins_user, jenkins_token)
+
+            crumb_url = f"{jenkins_url.rstrip('/')}/crumbIssuer/api/json"
 
             crumb_response = requests.get(
                 crumb_url,

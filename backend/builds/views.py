@@ -8,19 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 
 from pipeline.models import Pipeline
-
-from ai_engine.services import (
-    generate_build_summary,
-    generate_ai_summary,
-)
-
-from .serializers import BuildSerializer
-from .models import Build
-from ai_engine.services import (
-    generate_build_summary,
-    generate_ai_summary,
-)
-
+from ai_engine.services import generate_build_summary
 from .serializers import BuildSerializer
 from .models import Build
 
@@ -107,8 +95,6 @@ class BuildCreateView(APIView):
 
                 build.ai_summary = ai_summary
                 build.save()
-
-                generate_ai_summary(build)
 
             except Exception as e:
 

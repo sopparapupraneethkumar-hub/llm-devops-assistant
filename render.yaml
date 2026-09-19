@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: llm-devops-assistant
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn --chdir backend config.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.1
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: llm_devops_db
+          property: connectionString
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: JENKINS_URL
+        sync: false
+      - key: JENKINS_USER
+        sync: false
+      - key: JENKINS_API_TOKEN
+        sync: false
+
+databases:
+  - name: llm_devops_db
+    databaseName: llm_devops_db
+    user: postgres
+    plan: free
